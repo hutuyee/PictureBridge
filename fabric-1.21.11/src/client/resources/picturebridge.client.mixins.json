@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "haaa.picturebridge.fabric.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ChatScreenMixin",
+    "ChatHudMixin",
+    "ChatHudHudBackendMixin",
+    "ChatHudInteractableBackendMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
