@@ -49,7 +49,8 @@ def metadataProperties = [
         minecraft_version : minecraft_version,
         neoforge_version   : neoforge_version,
         java_compatibility : 'JAVA_17',
-        mixin_class        : 'haaa.picturebridge.neoforge.mixin.ScreenMixin'
+        mixin_package      : 'haaa.picturebridge.neoforge.mixin',
+        mixin_class        : 'ScreenMixin'
 ]
 
 tasks.named('processResources', ProcessResources).configure {

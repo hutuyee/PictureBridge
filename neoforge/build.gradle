@@ -44,17 +44,26 @@ subprojects { adapter ->
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(target.java as int)
 
-    def javaSources = [
-            rootProject.file("../neoforge-src/${target.source}/java"),
-            rootProject.file('../neoforge-src/entry/java'),
-            rootProject.file('../forge-common/src/main/java')
-    ]
-    if (target.source in ['1.20.4', '1.20.6', '1.21.1', '1.21.4']) {
-        javaSources.add(rootProject.file('../neoforge-src/shared-old-chat/java'))
-        javaSources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
-    } else if (target.source in ['1.21.8', '1.21.11']) {
-        javaSources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
-        javaSources.add(rootProject.file('../neoforge-src/shared-adt-chat/java'))
+    def javaSources
+    if (target.source == '26.1') {
+        javaSources = [
+                rootProject.file('../fabric-26.1/src/client/java'),
+                rootProject.file('../neoforge-src/26.1/java'),
+                rootProject.file('../neoforge-src/entry/java')
+        ]
+    } else {
+        javaSources = [
+                rootProject.file("../neoforge-src/${target.source}/java"),
+                rootProject.file('../neoforge-src/entry/java'),
+                rootProject.file('../forge-common/src/main/java')
+        ]
+        if (target.source in ['1.20.4', '1.20.6', '1.21.1', '1.21.4']) {
+            javaSources.add(rootProject.file('../neoforge-src/shared-old-chat/java'))
+            javaSources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
+        } else if (target.source in ['1.21.8', '1.21.11']) {
+            javaSources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
+            javaSources.add(rootProject.file('../neoforge-src/shared-adt-chat/java'))
+        }
     }
     sourceSets.main.java.setSrcDirs(javaSources)
     sourceSets.main.resources.setSrcDirs([
@@ -78,11 +87,14 @@ subprojects { adapter ->
             minecraft_version : target.minecraft,
             neoforge_version   : target.neoforge,
             java_compatibility : "JAVA_${target.java}",
+            mixin_package      : target.source == '26.1'
+                    ? 'haaa.picturebridge.fabric.mixin.client'
+                    : 'haaa.picturebridge.neoforge.mixin',
             mixin_class        : target.source == '26.1'
-                    ? 'haaa.picturebridge.fabric.mixin.client.ChatScreenMixin'
+                    ? 'ChatScreenMixin'
                     : (target.minecraft == '1.21.11'
-                    ? 'haaa.picturebridge.neoforge.mixin.ChatScreenMixin'
-                    : 'haaa.picturebridge.neoforge.mixin.ScreenMixin')
+                    ? 'ChatScreenMixin'
+                    : 'ScreenMixin')
     ]
 
     tasks.named('processResources', ProcessResources).configure {
