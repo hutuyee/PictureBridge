@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "compatibilityLevel": "${java_compatibility}",
+  "client": [
+    "${mixin_class}"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
