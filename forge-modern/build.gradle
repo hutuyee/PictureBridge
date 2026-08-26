@@ -11,8 +11,8 @@ def targets = [
         'forge-1.19'   : [minecraft:'1.19', forge:'41.1.0', source:'1.19', java:17],
         'forge-1.19.1' : [minecraft:'1.19.1', forge:'42.0.9', source:'1.19', java:17],
         'forge-1.19.2' : [minecraft:'1.19.2', forge:'43.5.0', source:'1.19', java:17],
-        'forge-1.19.3' : [minecraft:'1.19.3', forge:'44.1.0', source:'1.20.4', java:17],
-        'forge-1.19.4' : [minecraft:'1.19.4', forge:'45.4.0', source:'1.20.4', java:17],
+        'forge-1.19.3' : [minecraft:'1.19.3', forge:'44.1.0', source:'1.19.4', java:17],
+        'forge-1.19.4' : [minecraft:'1.19.4', forge:'45.4.0', source:'1.19.4', java:17],
         'forge-1.20'   : [minecraft:'1.20', forge:'46.0.14', source:'1.20.4', java:17],
         'forge-1.20.1' : [minecraft:'1.20.1', forge:'47.4.10', source:'1.20.4', java:17],
         'forge-1.20.2' : [minecraft:'1.20.2', forge:'48.1.0', source:'1.20.4', java:17],
@@ -44,7 +44,7 @@ subprojects { adapter ->
     java.toolchain.languageVersion = JavaLanguageVersion.of(target.java as int)
 
     def sources = [rootProject.file('../forge-modern-src/entry/java'), rootProject.file('../forge-common/src/main/java')]
-    if (target.source in ['1.17', '1.19']) {
+    if (target.source in ['1.17', '1.19', '1.19.4']) {
         sources.add(rootProject.file('../forge-modern-src/shared/java'))
         sources.add(rootProject.file("../forge-modern-src/${target.source}/java"))
     } else {
@@ -81,7 +81,7 @@ subprojects { adapter ->
             forge_version: target.forge,
             forge_major: target.forge.tokenize('.')[0],
             java_compatibility: "JAVA_${target.java}",
-            mixin_package: target.source in ['1.17', '1.19'] ? 'haaa.picturebridge.forge.modern.mixin' : 'haaa.picturebridge.neoforge.mixin',
+            mixin_package: target.source in ['1.17', '1.19', '1.19.4'] ? 'haaa.picturebridge.forge.modern.mixin' : 'haaa.picturebridge.neoforge.mixin',
             mixin_class: target.minecraft == '1.21.11' ? 'ChatScreenMixin' : 'ScreenMixin'
     ]
     tasks.named('processResources', ProcessResources).configure {
