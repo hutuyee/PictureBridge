@@ -23,7 +23,8 @@ def targets = [
         'neoforge-1.21.11': [minecraft: '1.21.11', neoforge: '21.11.45', source: '1.21.11', java: 21, metadata: 'modern'],
         'neoforge-26.1'   : [minecraft: '26.1', neoforge: '26.1.0.19-beta', source: '26.1', java: 25, metadata: 'modern'],
         'neoforge-26.1.1' : [minecraft: '26.1.1', neoforge: '26.1.1.15-beta', source: '26.1', java: 25, metadata: 'modern'],
-        'neoforge-26.1.2' : [minecraft: '26.1.2', neoforge: '26.1.2.98', source: '26.1', java: 25, metadata: 'modern']
+        'neoforge-26.1.2' : [minecraft: '26.1.2', neoforge: '26.1.2.98', source: '26.1', java: 25, metadata: 'modern'],
+        'neoforge-26.2'   : [minecraft: '26.2', neoforge: '26.2.0.68', source: '26.1', java: 25, metadata: 'modern']
 ]
 
 subprojects { adapter ->

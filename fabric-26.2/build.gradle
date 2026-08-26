@@ -1,0 +1,67 @@
+plugins {
+    id 'net.fabricmc.fabric-loom'
+    id 'maven-publish'
+}
+
+base {
+    archivesName = "picturebridge-fabric-${minecraft_26_2_version}"
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        picturebridge {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
+sourceSets.client.java.setSrcDirs([rootProject.file('fabric-26.1/src/client/java')])
+sourceSets.client.resources.setSrcDirs([rootProject.file('fabric-26.1/src/client/resources')])
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_26_2_version}"
+    implementation "net.fabricmc:fabric-loader:${loader_26_2_version}"
+}
+
+def fabricModProperties = [
+        version          : project.version,
+        minecraft_version: minecraft_26_2_dependency,
+        loader_version   : loader_26_2_version
+]
+
+tasks.named('processClientResources') {
+    inputs.properties fabricModProperties
+
+    filesMatching('fabric.mod.json') {
+        expand fabricModProperties
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 25
+    options.encoding = 'UTF-8'
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+    from(rootProject.file('LICENSE')) {
+        rename { 'LICENSE_picturebridge' }
+    }
+}
+
+publishing {
+    publications {
+        create('mavenJava', MavenPublication) {
+            artifactId = base.archivesName.get()
+            from components.java
+        }
+    }
+}
