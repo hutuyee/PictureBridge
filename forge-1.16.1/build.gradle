@@ -1,0 +1,2 @@
+ext.forgeTarget=[minecraft:'1.16.1',forge:'32.0.108']
+apply from:file('../forge-legacy-build/fg6.gradle')

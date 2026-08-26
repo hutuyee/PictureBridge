@@ -1,0 +1,2 @@
+ext.forgeTarget=[minecraft:'1.14.4',forge:'28.2.26',mappingChannel:'official',mappings:'1.14.4',source:'1.14']
+apply from:file('../forge-legacy-build/fg3.gradle')

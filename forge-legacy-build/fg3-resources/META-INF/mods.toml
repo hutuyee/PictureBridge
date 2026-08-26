@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[${forge_major},)"
+license="MIT"
+
+[[mods]]
+modId="picturebridge"
+version="${mod_version}"
+displayName="PictureBridge"
+authors="hutuyee"
+description='''在 Minecraft 客户端内查看 ShitBot 转发的 QQ 图片。'''
+
+[[dependencies.picturebridge]]
+modId="forge"
+mandatory=true
+versionRange="[${forge_version},)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.picturebridge]]
+modId="minecraft"
+mandatory=true
+versionRange="[${minecraft_version}]"
+ordering="NONE"
+side="CLIENT"

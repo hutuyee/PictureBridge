@@ -1,0 +1,45 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies { classpath 'net.minecraftforge.gradle:ForgeGradle:6.0.+' }
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+
+def target = project.ext.forgeTarget
+version = '0.4.0'
+group = 'haaa.picturebridge'
+base.archivesName = "picturebridge-forge-${target.minecraft}"
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
+minecraft {
+    mappings channel: 'official', version: target.minecraft
+    runs {
+        client {
+            workingDirectory project.file('run')
+            mods { picturebridge { source sourceSets.main } }
+        }
+    }
+}
+
+sourceSets.main.java.setSrcDirs([
+        project.file('../forge-1.16.5/src/main/java'),
+        project.file('../forge-common/src/main/java')
+])
+sourceSets.main.resources.setSrcDirs([
+        project.file('../forge-legacy-build/fg6-resources'),
+        project.file('../neoforge-common/src/main/resources')
+])
+
+dependencies { minecraft "net.minecraftforge:forge:${target.minecraft}-${target.forge}" }
+
+def props=[version:project.version,minecraft_version:target.minecraft,forge_version:target.forge,forge_major:target.forge.tokenize('.')[0]]
+tasks.named('processResources',ProcessResources).configure {
+    inputs.properties props
+    filesMatching(['META-INF/mods.toml','pack.mcmeta']) { expand props }
+}
+tasks.named('jar',Jar).configure { finalizedBy 'reobfJar' }
+tasks.withType(JavaCompile).configureEach { options.encoding='UTF-8' }

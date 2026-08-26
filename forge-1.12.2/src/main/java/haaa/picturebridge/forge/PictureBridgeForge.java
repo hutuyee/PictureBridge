@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
         modid = PictureBridgeForge.MOD_ID,
         name = "PictureBridge",
         version = PictureBridgeForge.VERSION,
-        acceptedMinecraftVersions = "[1.12.2]",
         clientSideOnly = true
 )
 public final class PictureBridgeForge {

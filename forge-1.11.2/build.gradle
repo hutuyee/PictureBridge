@@ -1,0 +1,2 @@
+ext.forgeTarget=[minecraft:'1.11.2',coordinate:'1.11.2-13.20.1.2588',mappings:'stable_32',fg:'2.3-SNAPSHOT',source:'forge-legacy-src/1.9',resources:'forge-1.12.2']
+apply from: file('../forge-legacy-build/fg2.gradle')

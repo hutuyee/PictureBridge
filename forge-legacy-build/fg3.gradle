@@ -1,0 +1,28 @@
+buildscript {
+    repositories { maven { url='https://maven.minecraftforge.net/' }; mavenCentral() }
+    dependencies { classpath 'net.minecraftforge.gradle:ForgeGradle:3.+' }
+}
+apply plugin:'net.minecraftforge.gradle'
+
+def target=project.ext.forgeTarget
+version='0.4.0';group='haaa.picturebridge';archivesBaseName="picturebridge-forge-${target.minecraft}"
+sourceCompatibility=targetCompatibility=compileJava.sourceCompatibility=compileJava.targetCompatibility='1.8'
+
+minecraft {
+    mappings channel:target.mappingChannel,version:target.mappings
+    runs { client { workingDirectory project.file('run') } }
+}
+sourceSets.main.java.setSrcDirs([project.file("../forge-legacy-src/${target.source}/src/main/java"),project.file('../forge-common/src/main/java')])
+sourceSets.main.resources.setSrcDirs([project.file('../forge-legacy-build/fg3-resources'),project.file('../neoforge-common/src/main/resources')])
+dependencies { minecraft "net.minecraftforge:forge:${target.minecraft}-${target.forge}" }
+def props=[mod_version:project.version,minecraft_version:target.minecraft,forge_version:target.forge,forge_major:target.forge.tokenize('.')[0]]
+processResources { inputs.properties props; filesMatching(['META-INF/mods.toml','pack.mcmeta']){expand props} }
+jar.finalizedBy('reobfJar')
+tasks.withType(JavaCompile){options.encoding='UTF-8'}
+if(target.source=='1.13'){
+    compileJava.source fileTree(project.file('../forge-legacy-src/1.9/src/main/java')){
+        include 'haaa/picturebridge/forge/AnimatedForgeTexture.java'
+        include 'haaa/picturebridge/forge/ImageViewerScreen.java'
+        include 'haaa/picturebridge/forge/ShitBotImageLink.java'
+    }
+}
