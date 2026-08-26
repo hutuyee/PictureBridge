@@ -1,0 +1,15 @@
+[
+  {
+    "modid": "picturebridge",
+    "name": "PictureBridge",
+    "description": "在 Minecraft 客户端内查看 ShitBot 转发的 QQ 图片。",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "authorList": ["hutuyee"],
+    "credits": "",
+    "url": "",
+    "updateUrl": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
