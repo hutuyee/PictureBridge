@@ -1,0 +1,2 @@
+ext.fabricTarget = [minecraft: '1.16.4', yarn: '1.16.4+build.9', loader: '0.15.11', source: '1.16', java: 8]
+apply from: rootProject.file('fabric-legacy.gradle')

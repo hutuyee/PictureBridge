@@ -1,0 +1,77 @@
+apply plugin: 'net.fabricmc.fabric-loom-remap'
+apply plugin: 'maven-publish'
+
+def target = project.ext.fabricTarget
+
+base {
+    archivesName = "picturebridge-fabric-${target.minecraft}"
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        picturebridge {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
+def legacyJavaSources = [
+        rootProject.file('fabric-legacy-src/common/java'),
+        rootProject.file("fabric-legacy-src/${target.source}/java"),
+        rootProject.file('forge-common/src/main/java')
+]
+if (target.source in ['1.19', '1.19.4']) {
+    legacyJavaSources.add(rootProject.file('fabric-legacy-src/1.19-common/java'))
+}
+sourceSets.client.java.setSrcDirs(legacyJavaSources)
+sourceSets.client.resources.setSrcDirs([
+        rootProject.file('fabric-legacy-resources/src/client/resources')
+])
+
+dependencies {
+    minecraft "com.mojang:minecraft:${target.minecraft}"
+    mappings "net.fabricmc:yarn:${target.yarn}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${target.loader}"
+}
+
+def metadataProperties = [
+        version           : project.version,
+        minecraft_version : target.minecraft,
+        loader_version    : target.loader,
+        java_version      : target.java,
+        java_compatibility: "JAVA_${target.java}"
+]
+
+tasks.named('processClientResources') {
+    inputs.properties metadataProperties
+    filesMatching(['fabric.mod.json', 'picturebridge.client.mixins.json']) {
+        expand metadataProperties
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = target.java as int
+    options.encoding = 'UTF-8'
+}
+
+java {
+    withSourcesJar()
+}
+
+jar {
+    from(rootProject.file('LICENSE')) {
+        rename { 'LICENSE_picturebridge' }
+    }
+}
+
+publishing {
+    publications {
+        create('mavenJava', MavenPublication) {
+            artifactId = base.archivesName.get()
+            from components.java
+        }
+    }
+}
