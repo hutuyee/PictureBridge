@@ -6,9 +6,10 @@ ShitBot 会把 QQ 媒体发送成带有 `OPEN_URL` 点击事件的聊天片段�
 
 三个加载器目前的功能范围不同：
 
-| 加载器 | 聊天内嵌预览 | GIF 预览 | 点击后高清查看 | 缩放、拖动、重载、复制链接 |
+| 加载器 / 版本 | 聊天内嵌预览 | GIF 预览 | 点击后高清查看 | 缩放、拖动、重载、复制链接 |
 | --- | --- | --- | --- | --- |
-| Fabric | 支持 | 支持 | 支持 | 支持 |
+| Fabric 1.14–1.19.4 | 暂未实现 | 在高清查看器中支持 | 支持 | 支持 |
+| Fabric 1.20–26.2 | 支持 | 支持 | 支持 | 支持 |
 | Forge | 暂未实现 | 在高清查看器中支持 | 支持 | 支持 |
 | NeoForge | 暂未实现 | 在高清查看器中支持 | 支持 | 支持 |
 
@@ -16,12 +17,20 @@ Forge 与 NeoForge 版本会接管带 PictureBridge 标记的聊天文字点击�
 
 ## 支持版本
 
-子项目名称表示用于编译的基准版本；同一个 Fabric JAR 可以覆盖的 Minecraft 范围以表格为准。NeoForge 因小版本间二进制接口变化较多，每个 Minecraft 发布版都有独立构建。安装时必须选择与 Minecraft 版本和加载器都匹配的 JAR，三个加载器的产物不能混用。
+支持范围按 Mojang 正式发布版统计，不包含快照、Pre-release 和 RC。子项目名称表示实际编译目标；Fabric 1.14–1.19.4、Forge 和 NeoForge 的旧版/现代矩阵都为每个正式目标生成精确 JAR，现有 Fabric 1.20–1.21.11 与 26.1.x 则仅在确认的 API 断点内合并产物，26.2 重新使用精确目标。安装时必须选择与 Minecraft 版本和加载器都匹配的 JAR，三个加载器的产物不能混用。
+
+加载器本身不存在的组合不创建空壳：官方 Fabric 从 Minecraft 1.14 开始，NeoForge 从 1.20.1 开始；1.8–1.13.2 只有 Forge 目标，1.14–1.19.4 有 Forge 与 Fabric，1.20.1 起才可能有三条加载器线。Forge 官方当前没有 26.x 发布，因此 Forge 支持止于 1.21.11。
 
 ### Fabric
 
 | 子项目 / 产物前缀 | 支持的 Minecraft | 最低 Fabric Loader | Java | 功能状态 |
 | --- | --- | --- | --- | --- |
+| `picturebridge-fabric-1.14*` | 1.14、1.14.1、1.14.2、1.14.3、1.14.4（各自独立 JAR） | 0.15.11 | 8+ | 标记点击接管、高清查看 |
+| `picturebridge-fabric-1.15*` | 1.15、1.15.1、1.15.2（各自独立 JAR） | 0.15.11 | 8+ | 标记点击接管、高清查看 |
+| `picturebridge-fabric-1.16*` | 1.16、1.16.1、1.16.2、1.16.3、1.16.4、1.16.5（各自独立 JAR） | 0.15.11 | 8+ | 标记点击接管、高清查看 |
+| `picturebridge-fabric-1.17*` | 1.17、1.17.1（各自独立 JAR） | 0.15.11 | 16+ | 标记点击接管、高清查看 |
+| `picturebridge-fabric-1.18*` | 1.18、1.18.1、1.18.2（各自独立 JAR） | 0.15.11 | 17+ | 标记点击接管、高清查看 |
+| `picturebridge-fabric-1.19*` | 1.19、1.19.1、1.19.2、1.19.3、1.19.4（各自独立 JAR） | 0.15.11 | 17+ | 标记点击接管、高清查看 |
 | `picturebridge-fabric-1.20.1` | 1.20–1.20.4 | 0.15.11 | 17+ | 完整预览 |
 | `picturebridge-fabric-1.20.6` | 1.20.5–1.20.6 | 0.15.11 | 21+ | 完整预览 |
 | `picturebridge-fabric-1.21.1` | 1.21–1.21.1 | 0.16.10 | 21+ | 完整预览 |
@@ -30,18 +39,21 @@ Forge 与 NeoForge 版本会接管带 PictureBridge 标记的聊天文字点击�
 | `picturebridge-fabric-1.21.10` | 1.21.9–1.21.10 | 0.17.3 | 21+ | 完整预览 |
 | `picturebridge-fabric-1.21.11` | 1.21.11 | 0.19.3 | 21+ | 完整预览 |
 | `picturebridge-fabric-26.1` | 26.1.x | 0.19.3 | 25+ | 完整预览 |
+| `picturebridge-fabric-26.2` | 26.2 | 0.19.3 | 25+ | 完整预览 |
 
-Fabric 构建不依赖 Fabric API，只需要 Fabric Loader。`fabric-26.1` 使用 26.1 开始采用的新开发命名与 Java 25，其源码没有与旧版 Yarn 模块混用。
+Fabric 构建不依赖 Fabric API，只需要 Fabric Loader。1.14–1.19.4 的 24 个目标使用各自精确 Yarn 映射，并按 1.14、1.16、1.17/1.18、1.19–1.19.2、1.19.3/1.19.4 的 GUI API 断点共享实现。`fabric-26.1` 与 `fabric-26.2` 使用新开发命名和 Java 25，不与旧 Yarn 源码混用。
 
 ### Forge
 
-用户提出的 Forge 1.8 在本仓库中按仍广泛使用的 **Minecraft 1.8.9** 适配；该 JAR 不声明兼容 1.8.0–1.8.8。
+Forge 只列出官方 Maven 实际发布过的 Minecraft 目标；例如没有 Forge 1.13、1.14、1.14.1、1.16、1.17、1.20.5、1.21.2 或 26.x，因此这些组合不会生成误导性 JAR。
 
-| 子项目 / 产物前缀 | Minecraft | Forge | Java | 功能状态 |
-| --- | --- | --- | --- | --- |
-| `picturebridge-forge-1.8.9` | 1.8.9 | 11.15.1.2318 | 8 | 标记点击接管、高清查看 |
-| `picturebridge-forge-1.12.2` | 1.12.2 | 14.23.5.2860 | 8 | 标记点击接管、高清查看 |
-| `picturebridge-forge-1.16.5` | 1.16.5 | 36.2.42 | 8 | 标记点击接管、高清查看 |
+| 构建时代 | 精确支持的 Minecraft 正式版 | Java | 功能状态 |
+| --- | --- | --- | --- |
+| ForgeGradle 2.x | 1.8、1.8.8、1.8.9、1.9、1.9.4、1.10、1.10.2、1.11、1.11.2、1.12、1.12.1、1.12.2 | 8 | 标记点击接管、高清查看 |
+| ForgeGradle 3 / 6 | 1.13.2、1.14.2、1.14.3、1.14.4、1.15、1.15.1、1.15.2、1.16.1、1.16.2、1.16.3、1.16.4、1.16.5 | 8 | 标记点击接管、高清查看 |
+| ForgeGradle 6 聚合工程 | 1.17.1、1.18、1.18.1、1.18.2、1.19、1.19.1、1.19.2、1.19.3、1.19.4、1.20、1.20.1、1.20.2、1.20.3、1.20.4、1.20.6、1.21、1.21.1、1.21.3、1.21.4、1.21.5、1.21.6、1.21.7、1.21.8、1.21.9、1.21.10、1.21.11 | 16 / 17 / 21 | 标记点击接管、高清查看 |
+
+每个表中版本都对应 `forge-<Minecraft版本>` 目录和 `picturebridge-forge-<Minecraft版本>` 产物，不用相邻版本的 JAR 替代。
 
 ### NeoForge
 
@@ -70,6 +82,7 @@ NeoForge 在本项目范围内从 Minecraft 1.20.1 开始。1.20.1 仍使用分�
 | `picturebridge-neoforge-26.1` | 26.1 | 26.1.0.19-beta | 25 | beta |
 | `picturebridge-neoforge-26.1.1` | 26.1.1 | 26.1.1.15-beta | 25 | beta |
 | `picturebridge-neoforge-26.1.2` | 26.1.2 | 26.1.2.98 | 25 | 稳定 |
+| `picturebridge-neoforge-26.2` | 26.2 | 26.2.0.68 | 25 | 稳定 |
 
 所有 NeoForge 构建当前实现标记点击接管、异步下载、GIF、高清查看、缩放、拖动、重载、复制链接与安全限制；聊天内嵌图片块暂未实现。
 
@@ -96,7 +109,7 @@ NeoForge 在本项目范围内从 Minecraft 1.20.1 开始。1.20.1 仍使用分�
 
 ### Fabric
 
-根 Gradle 工程只包含 Fabric 子项目。因为 `fabric-26.1` 需要 Java 25，导入根工程以及一次构建全部 Fabric 版本时，应将 Gradle JVM 设为 JDK 25；各旧版模块仍按各自的 `options.release` 生成 Java 17 或 Java 21 字节码。
+根 Gradle 工程只包含 Fabric 子项目。因为 26.x 需要 Java 25，导入根工程以及一次构建全部 Fabric 版本时，应将 Gradle JVM 设为 JDK 25；各旧版模块仍按各自的 `options.release` 生成 Java 8、16、17 或 21 字节码。
 
 构建全部 Fabric 版本：
 
@@ -122,13 +135,14 @@ Fabric 构建产物位于对应模块的 `build/libs/`，例如：
 fabric-1.20.1/build/libs/
 fabric-1.21.11/build/libs/
 fabric-26.1/build/libs/
+fabric-26.2/build/libs/
 ```
 
 ### NeoForge
 
-Minecraft 1.20.2–26.1.2 的 NeoForge 构建集中在独立的 `neoforge/` 聚合工程中，不会进入 Fabric 根工程的 `build` 任务。聚合工程包含 Java 25 的 26.1.x 模块，因此运行其 Gradle 时应使用 JDK 25；各模块会通过 toolchain 和 `options.release` 输出对应的 Java 17、21 或 25 字节码。
+Minecraft 1.20.2–26.2 的 NeoForge 构建集中在独立的 `neoforge/` 聚合工程中，不会进入 Fabric 根工程的 `build` 任务。聚合工程包含 Java 25 的 26.x 模块，因此运行其 Gradle 时应使用 JDK 25；各模块会通过 toolchain 和 `options.release` 输出对应的 Java 17、21 或 25 字节码。
 
-构建全部 NeoForge 1.20.2–26.1.2 版本：
+构建全部 NeoForge 1.20.2–26.2 版本：
 
 ```powershell
 .\neoforge\gradlew.bat build
@@ -158,40 +172,46 @@ NeoForge 产物位于对应版本目录的 `build/libs/`，例如：
 neoforge-1.20.1/build/libs/
 neoforge-1.20.4/build/libs/
 neoforge-1.21.11/build/libs/
-neoforge-26.1.2/build/libs/
+neoforge-26.2/build/libs/
 ```
 
 ### Forge
 
-三个 Forge 版本跨越了互不兼容的 ForgeGradle 与 Gradle 时代，因此它们是独立 Gradle 工程，没有注册到根 `settings.gradle`。必须进入相应目录，使用该目录自带的 Wrapper 构建。
+Forge 跨越 ForgeGradle 2、3、6 和多个不兼容的 Gradle/JDK 时代。1.17.1–1.21.11 集中在 `forge-modern/` 聚合工程；1.8–1.16.5 保持独立目标，并按对应时代调用 Gradle。
 
-Forge 1.8.9，使用 JDK 8 启动 Gradle：
-
-```powershell
-cd forge-1.8.9
-.\gradlew.bat build
-```
-
-Forge 1.12.2，使用 JDK 8 启动 Gradle：
+构建全部现代 Forge 目标（Gradle JVM 使用 JDK 21）：
 
 ```powershell
-cd forge-1.12.2
-.\gradlew.bat build
+.\forge-modern\gradlew.bat build
 ```
 
-Forge 1.16.5 使用 Gradle 8.4，因此 Gradle JVM 应使用 JDK 17 或更高版本；项目本身配置为 Java 8 toolchain，构建机还需要能提供 JDK 8 toolchain：
+只构建一个现代目标：
+
+```powershell
+.\forge-modern\gradlew.bat :forge-1.20.6:build
+```
+
+旧目标按下表选择启动器；`-p` 后面的目录就是所需精确 Minecraft 目标：
+
+| Minecraft 目标 | Gradle / JDK | 示例命令 |
+| --- | --- | --- |
+| 1.8、1.8.8、1.8.9 | Gradle 2.7 / JDK 8 | `.\forge-1.8.9\gradlew.bat -p .\forge-1.8 build` |
+| 1.9–1.10.2 | Gradle 2.14.1 / JDK 8 | `gradle -p .\forge-1.10.2 build` |
+| 1.11–1.12.2 | Gradle 4.9 / JDK 8 | `.\forge-1.12.2\gradlew.bat -p .\forge-1.12.1 build` |
+| 1.13.2–1.15.2 | Gradle 4.9 / JDK 8 | `.\forge-1.12.2\gradlew.bat -p .\forge-1.15.2 build` |
+| 1.16.1–1.16.5 | Gradle 8.4 / JDK 17+，并提供 JDK 8 toolchain | `.\forge-1.16.5\gradlew.bat -p .\forge-1.16.4 build` |
+
+三个原有独立目标仍可在自身目录直接构建，例如：
 
 ```powershell
 cd forge-1.16.5
 .\gradlew.bat build
 ```
 
-Forge 产物分别位于：
+所有 Forge 产物都位于对应精确目标的 `build/libs/`：
 
 ```text
-forge-1.8.9/build/libs/
-forge-1.12.2/build/libs/
-forge-1.16.5/build/libs/
+forge-<Minecraft版本>/build/libs/
 ```
 
 ## 多版本项目结构
@@ -201,6 +221,9 @@ PictureBridge/
 ├─ build.gradle                 # Fabric 根工程的共享项目元数据
 ├─ settings.gradle              # 注册所有 Fabric 版本子项目
 ├─ gradle.properties            # Fabric MC、Yarn、Loader、Java 与模组版本
+├─ fabric-1.14...1.19.4/        # 24 个旧 Fabric 精确构建目标
+├─ fabric-legacy.gradle         # 旧 Fabric 共享构建逻辑
+├─ fabric-legacy-src/           # 旧 Fabric GUI/API 断点源码
 ├─ fabric-1.20.1/               # 1.20–1.20.4 API 断点
 ├─ fabric-1.20.6/               # 1.20.5–1.20.6 API 断点
 ├─ fabric-1.21.1/               # 1.21–1.21.1 API 断点
@@ -209,11 +232,17 @@ PictureBridge/
 ├─ fabric-1.21.10/              # 1.21.9–1.21.10 API 断点
 ├─ fabric-1.21.11/              # 1.21.11 的聊天渲染后端
 ├─ fabric-26.1/                 # 26.1.x 的新命名与 Java 25 实现
-├─ forge-common/                # 三个 Forge 版本共享的 Java 8 下载与解码代码
+├─ fabric-26.2/                 # 26.2 精确构建
+├─ forge-common/                # 全加载器旧版可复用的 Java 8 下载与解码代码
+├─ forge-<MC版本>/               # 50 个官方 Forge Minecraft 目标
+├─ forge-legacy-build/          # ForgeGradle 2/3/6 的旧版共享构建逻辑
+├─ forge-legacy-src/            # Forge 1.9、1.13、1.14 API 断点
+├─ forge-modern/                # Forge 1.17.1–1.21.11 聚合构建
+├─ forge-modern-src/            # 现代 Forge 入口、查看器和 Mixin
 ├─ forge-1.8.9/                 # 独立 ForgeGradle 2.1 工程
 ├─ forge-1.12.2/                # 独立 ForgeGradle 3 工程
 ├─ forge-1.16.5/                # 独立 ForgeGradle 6 工程
-├─ neoforge/                    # 1.20.2–26.1.2 NeoForge 聚合构建
+├─ neoforge/                    # 1.20.2–26.2 NeoForge 聚合构建
 ├─ neoforge-1.20.1/             # 分叉期独立 NeoForge/ForgeGradle 工程
 ├─ neoforge-<MC版本>/            # 每个 Minecraft 发布版的独立 NeoForge 产物目录
 ├─ neoforge-src/                # NeoForge API 断点实现与版本共享源码
@@ -221,7 +250,7 @@ PictureBridge/
 └─ neoforge-metadata/           # mods.toml、neoforge.mods.toml 与 Mixin 模板
 ```
 
-Fabric 版本按聊天渲染、输入事件、纹理绘制和点击/悬浮事件 API 的变化拆分。Forge 共享层只包含 Java 8 可用的网络、安全校验、缓存和图片解码逻辑。NeoForge 为每个 Minecraft 发布版生成独立 JAR，但在 1.20.2–1.20.4、1.20.5–1.21.1、1.21.2–1.21.4、1.21.5–1.21.8、1.21.9–1.21.11 和 26.1.x 这些真实 API 断点内共享源码。
+Fabric 版本按聊天渲染、输入事件、纹理绘制和点击/悬浮事件 API 的变化拆分。Forge 共享层只包含 Java 8 可用的网络、安全校验、缓存和图片解码逻辑，精确版本项目按 ForgeGradle 时代拆分。NeoForge 为每个 Minecraft 发布版生成独立 JAR，但在 1.20.2–1.20.4、1.20.5–1.21.1、1.21.2–1.21.4、1.21.5–1.21.8、1.21.9–1.21.11 和 26.x 这些真实 API 断点内共享源码。
 
 ## 图片识别规则
 
