@@ -1,0 +1,93 @@
+plugins {
+    id 'base'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)' apply false
+}
+
+def targets = [
+        'forge-1.17.1' : [minecraft:'1.17.1', forge:'37.1.1', source:'1.17', java:16],
+        'forge-1.18'   : [minecraft:'1.18', forge:'38.0.17', source:'1.17', java:17],
+        'forge-1.18.1' : [minecraft:'1.18.1', forge:'39.1.0', source:'1.17', java:17],
+        'forge-1.18.2' : [minecraft:'1.18.2', forge:'40.3.0', source:'1.17', java:17],
+        'forge-1.19'   : [minecraft:'1.19', forge:'41.1.0', source:'1.19', java:17],
+        'forge-1.19.1' : [minecraft:'1.19.1', forge:'42.0.9', source:'1.19', java:17],
+        'forge-1.19.2' : [minecraft:'1.19.2', forge:'43.5.0', source:'1.19', java:17],
+        'forge-1.19.3' : [minecraft:'1.19.3', forge:'44.1.0', source:'1.20.4', java:17],
+        'forge-1.19.4' : [minecraft:'1.19.4', forge:'45.4.0', source:'1.20.4', java:17],
+        'forge-1.20'   : [minecraft:'1.20', forge:'46.0.14', source:'1.20.4', java:17],
+        'forge-1.20.1' : [minecraft:'1.20.1', forge:'47.4.10', source:'1.20.4', java:17],
+        'forge-1.20.2' : [minecraft:'1.20.2', forge:'48.1.0', source:'1.20.4', java:17],
+        'forge-1.20.3' : [minecraft:'1.20.3', forge:'49.0.2', source:'1.20.4', java:17],
+        'forge-1.20.4' : [minecraft:'1.20.4', forge:'49.2.0', source:'1.20.4', java:17],
+        'forge-1.20.6' : [minecraft:'1.20.6', forge:'50.2.0', source:'1.20.6', java:21],
+        'forge-1.21'   : [minecraft:'1.21', forge:'51.0.33', source:'1.20.6', java:21],
+        'forge-1.21.1' : [minecraft:'1.21.1', forge:'52.1.0', source:'1.20.6', java:21],
+        'forge-1.21.3' : [minecraft:'1.21.3', forge:'53.1.0', source:'1.21.4', java:21],
+        'forge-1.21.4' : [minecraft:'1.21.4', forge:'54.1.14', source:'1.21.4', java:21],
+        'forge-1.21.5' : [minecraft:'1.21.5', forge:'55.1.0', source:'1.21.8', java:21],
+        'forge-1.21.6' : [minecraft:'1.21.6', forge:'56.0.9', source:'1.21.8', java:21],
+        'forge-1.21.7' : [minecraft:'1.21.7', forge:'57.0.3', source:'1.21.8', java:21],
+        'forge-1.21.8' : [minecraft:'1.21.8', forge:'58.1.0', source:'1.21.8', java:21],
+        'forge-1.21.9' : [minecraft:'1.21.9', forge:'59.0.5', source:'1.21.11', java:21],
+        'forge-1.21.10': [minecraft:'1.21.10', forge:'60.1.0', source:'1.21.11', java:21],
+        'forge-1.21.11': [minecraft:'1.21.11', forge:'61.2.0', source:'1.21.11', java:21]
+]
+
+subprojects { adapter ->
+    def target = targets[adapter.name]
+    if (target == null) throw new GradleException("Missing Forge target configuration for ${adapter.name}")
+    apply plugin: 'java-library'
+    apply plugin: 'net.minecraftforge.gradle'
+
+    group = 'haaa.picturebridge'
+    version = rootProject.mod_version
+    base { archivesName = "picturebridge-${adapter.name}" }
+    java.toolchain.languageVersion = JavaLanguageVersion.of(target.java as int)
+
+    def sources = [rootProject.file('../forge-modern-src/entry/java'), rootProject.file('../forge-common/src/main/java')]
+    if (target.source in ['1.17', '1.19']) {
+        sources.add(rootProject.file('../forge-modern-src/shared/java'))
+        sources.add(rootProject.file("../forge-modern-src/${target.source}/java"))
+    } else {
+        sources.add(rootProject.file("../neoforge-src/${target.source}/java"))
+        if (target.source in ['1.20.4', '1.20.6', '1.21.4']) {
+            sources.add(rootProject.file('../neoforge-src/shared-old-chat/java'))
+            sources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
+        } else if (target.source in ['1.21.8', '1.21.11']) {
+            sources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
+            sources.add(rootProject.file('../neoforge-src/shared-adt-chat/java'))
+        }
+    }
+    sourceSets.main.java.setSrcDirs(sources)
+    sourceSets.main.resources.setSrcDirs([
+            rootProject.file('../neoforge-common/src/main/resources'),
+            rootProject.file('../forge-modern-metadata/src/main/resources')
+    ])
+
+    minecraft {
+        mappings channel: 'official', version: target.minecraft
+        copyIdeResources = true
+        runs {
+            client {
+                workingDirectory project.file('run')
+                mods { picturebridge { source sourceSets.main } }
+            }
+        }
+    }
+    dependencies { minecraft "net.minecraftforge:forge:${target.minecraft}-${target.forge}" }
+
+    def props = [
+            mod_version: rootProject.mod_version,
+            minecraft_version: target.minecraft,
+            forge_version: target.forge,
+            forge_major: target.forge.tokenize('.')[0],
+            java_compatibility: "JAVA_${target.java}",
+            mixin_package: target.source in ['1.17', '1.19'] ? 'haaa.picturebridge.forge.modern.mixin' : 'haaa.picturebridge.neoforge.mixin',
+            mixin_class: target.minecraft == '1.21.11' ? 'ChatScreenMixin' : 'ScreenMixin'
+    ]
+    tasks.named('processResources', ProcessResources).configure {
+        inputs.properties props
+        filesMatching(['META-INF/mods.toml', 'picturebridge.forge.mixins.json']) { expand props }
+    }
+    tasks.named('jar', Jar).configure { finalizedBy 'reobfJar'; from(rootProject.file('../LICENSE')) { rename { 'LICENSE_picturebridge' } } }
+    tasks.withType(JavaCompile).configureEach { options.release = target.java as int; options.encoding = 'UTF-8' }
+}

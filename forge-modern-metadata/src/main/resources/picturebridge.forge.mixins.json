@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "${mixin_package}",
+  "compatibilityLevel": "${java_compatibility}",
+  "client": [
+    "${mixin_class}"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

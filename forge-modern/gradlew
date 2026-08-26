@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+exec "$(dirname "$0")/../forge-1.16.5/gradlew" -p "$(dirname "$0")" "$@"
