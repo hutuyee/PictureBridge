@@ -31,6 +31,7 @@ sourceSets.main.java.setSrcDirs([
         'src/main/java',
         '../neoforge-src/1.20.4/java',
         '../neoforge-src/shared-old-chat/java',
+        '../neoforge-src/shared-screen-old-input/java',
         '../forge-common/src/main/java'
 ])
 sourceSets.main.resources.setSrcDirs([

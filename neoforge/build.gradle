@@ -51,6 +51,10 @@ subprojects { adapter ->
     ]
     if (target.source in ['1.20.4', '1.20.6', '1.21.1', '1.21.4']) {
         javaSources.add(rootProject.file('../neoforge-src/shared-old-chat/java'))
+        javaSources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
+    } else if (target.source in ['1.21.8', '1.21.11']) {
+        javaSources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
+        javaSources.add(rootProject.file('../neoforge-src/shared-adt-chat/java'))
     }
     sourceSets.main.java.setSrcDirs(javaSources)
     sourceSets.main.resources.setSrcDirs([
@@ -76,7 +80,7 @@ subprojects { adapter ->
             java_compatibility : "JAVA_${target.java}",
             mixin_class        : target.source == '26.1'
                     ? 'haaa.picturebridge.fabric.mixin.client.ChatScreenMixin'
-                    : (target.source == '1.21.11'
+                    : (target.minecraft == '1.21.11'
                     ? 'haaa.picturebridge.neoforge.mixin.ChatScreenMixin'
                     : 'haaa.picturebridge.neoforge.mixin.ScreenMixin')
     ]

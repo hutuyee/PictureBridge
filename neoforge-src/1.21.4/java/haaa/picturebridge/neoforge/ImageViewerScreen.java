@@ -2,6 +2,7 @@ package haaa.picturebridge.neoforge;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 
 import java.net.URI;
 
@@ -13,8 +14,9 @@ public final class ImageViewerScreen extends BaseImageViewerScreen {
     @Override
     protected void blitTexture(GuiGraphics graphics, DrawnImage drawn) {
         AnimatedNeoTexture texture = picturebridgeTexture();
-        graphics.blit(texture.location(), drawn.x(), drawn.y(), drawn.width(), drawn.height(),
-                0.0F, 0.0F, texture.width(), texture.height(), texture.width(), texture.height());
+        graphics.blit(RenderType::guiTextured, texture.location(),
+                drawn.x(), drawn.y(), 0.0F, 0.0F, drawn.width(), drawn.height(),
+                texture.width(), texture.height());
     }
 
     @Override
@@ -41,8 +43,9 @@ public final class ImageViewerScreen extends BaseImageViewerScreen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        return handleImageScroll(mouseX, mouseY, amount)
-                || super.mouseScrolled(mouseX, mouseY, amount);
+    public boolean mouseScrolled(double mouseX, double mouseY,
+                                 double horizontalAmount, double verticalAmount) {
+        return handleImageScroll(mouseX, mouseY, verticalAmount)
+                || super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 }

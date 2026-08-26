@@ -132,11 +132,7 @@ abstract class BaseImageViewerScreen extends Screen {
         }
     }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) {
-            return true;
-        }
+    protected final boolean handleLegacyImageClick(double mouseX, double mouseY, int button) {
         if (state == State.READY && button == GLFW.GLFW_MOUSE_BUTTON_LEFT
                 && imageArea().contains(mouseX, mouseY)) {
             long now = System.nanoTime();
@@ -151,22 +147,33 @@ abstract class BaseImageViewerScreen extends Screen {
         return false;
     }
 
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    protected final boolean handleImageClick(double mouseX, double mouseY, int button, boolean doubled) {
+        if (state == State.READY && button == GLFW.GLFW_MOUSE_BUTTON_LEFT
+                && imageArea().contains(mouseX, mouseY)) {
+            if (doubled) {
+                resetView();
+            } else {
+                dragging = true;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    protected final boolean handleImageDrag(int button, double deltaX, double deltaY) {
         if (dragging && state == State.READY && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             panX += deltaX;
             panY += deltaY;
             clampPan(imageArea());
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return false;
     }
 
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    protected final boolean handleImageRelease() {
         boolean wasDragging = dragging;
         dragging = false;
-        return super.mouseReleased(mouseX, mouseY, button) || wasDragging;
+        return wasDragging;
     }
 
     protected final boolean handleImageScroll(double mouseX, double mouseY, double amount) {
@@ -178,13 +185,12 @@ abstract class BaseImageViewerScreen extends Screen {
         return true;
     }
 
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    protected final boolean handleResetKey(int keyCode) {
         if (state == State.READY && keyCode == GLFW.GLFW_KEY_R) {
             resetView();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return false;
     }
 
     @Override

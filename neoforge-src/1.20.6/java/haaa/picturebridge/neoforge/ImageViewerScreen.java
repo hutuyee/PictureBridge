@@ -18,6 +18,29 @@ public final class ImageViewerScreen extends BaseImageViewerScreen {
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return super.mouseClicked(mouseX, mouseY, button)
+                || handleLegacyImageClick(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        return handleImageDrag(button, deltaX, deltaY)
+                || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        boolean handled = super.mouseReleased(mouseX, mouseY, button);
+        return handleImageRelease() || handled;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return handleResetKey(keyCode) || super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY,
                                  double horizontalAmount, double verticalAmount) {
         return handleImageScroll(mouseX, mouseY, verticalAmount)
