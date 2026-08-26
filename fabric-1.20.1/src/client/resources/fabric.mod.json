@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "picturebridge",
+  "version": "${version}",
+  "name": "PictureBridge",
+  "description": "在 Minecraft 客户端内查看 ShitBot 转发的 QQ 图片。",
+  "authors": [
+    "hutuyee"
+  ],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "haaa.picturebridge.fabric.PictureBridgeClient"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "picturebridge.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=17"
+  }
+}
