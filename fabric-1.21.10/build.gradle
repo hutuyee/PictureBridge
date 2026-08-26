@@ -1,0 +1,67 @@
+plugins {
+    id 'net.fabricmc.fabric-loom-remap'
+    id 'maven-publish'
+}
+
+base {
+    archivesName = "picturebridge-fabric-${minecraft_1_21_10_version}"
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        picturebridge {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_1_21_10_version}"
+    mappings "net.fabricmc:yarn:${yarn_1_21_10_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${loader_1_21_10_version}"
+}
+
+def fabricModProperties = [
+        version          : project.version,
+        minecraft_version: minecraft_1_21_10_dependency,
+        loader_version   : loader_1_21_10_version
+]
+
+// fabric.mod.json belongs to the client source set after splitEnvironmentSourceSets().
+// Configure its resource task rather than the main processResources task.
+tasks.named('processClientResources') {
+    inputs.properties fabricModProperties
+
+    filesMatching('fabric.mod.json') {
+        expand fabricModProperties
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+    options.encoding = 'UTF-8'
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+    from(rootProject.file('LICENSE')) {
+        rename { "LICENSE_picturebridge" }
+    }
+}
+
+publishing {
+    publications {
+        create('mavenJava', MavenPublication) {
+            artifactId = base.archivesName.get()
+            from components.java
+        }
+    }
+}
