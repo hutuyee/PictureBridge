@@ -1,0 +1,194 @@
+name: Build release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.release.id }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: fabric
+            name: Fabric
+            java: "25"
+            gradle: wrapper
+          - id: neoforge
+            name: NeoForge 1.20.2-26.2
+            java: |-
+              17
+              21
+              25
+            gradle: wrapper
+          - id: neoforge-1-20-1
+            name: NeoForge 1.20.1
+            java: "17"
+            gradle: wrapper
+          - id: forge-modern
+            name: Forge 1.17.1-1.21.11
+            java: |-
+              16
+              17
+              21
+            gradle: wrapper
+          - id: forge-1-8
+            name: Forge 1.8-1.8.9
+            java: "8"
+            gradle: wrapper
+          - id: forge-1-9
+            name: Forge 1.9-1.10.2
+            java: "8"
+            gradle: "2.14.1"
+          - id: forge-1-11
+            name: Forge 1.11-1.15.2
+            java: "8"
+            gradle: wrapper
+          - id: forge-1-16
+            name: Forge 1.16.1-1.16.5
+            java: |-
+              8
+              17
+            gradle: wrapper
+
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: ${{ matrix.gradle }}
+
+      - name: Build
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          case "${{ matrix.id }}" in
+            fabric)
+              bash ./gradlew --no-daemon build
+              ;;
+            neoforge)
+              bash ./gradlew --no-daemon \
+                -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME_21_X64,JAVA_HOME_25_X64 \
+                -p neoforge build
+              ;;
+            neoforge-1-20-1)
+              bash ./forge-1.16.5/gradlew --no-daemon \
+                -p neoforge-1.20.1 build
+              ;;
+            forge-modern)
+              bash ./forge-1.16.5/gradlew --no-daemon \
+                -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_16_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64 \
+                -p forge-modern build
+              ;;
+            forge-1-8)
+              for target in forge-1.8 forge-1.8.8 forge-1.8.9; do
+                bash ./forge-1.8.9/gradlew --no-daemon -p "$target" build
+              done
+              ;;
+            forge-1-9)
+              for target in forge-1.9 forge-1.9.4 forge-1.10 forge-1.10.2; do
+                gradle --no-daemon -p "$target" build
+              done
+              ;;
+            forge-1-11)
+              for target in \
+                forge-1.11 forge-1.11.2 \
+                forge-1.12 forge-1.12.1 forge-1.12.2 \
+                forge-1.13.2 \
+                forge-1.14.2 forge-1.14.3 forge-1.14.4 \
+                forge-1.15 forge-1.15.1 forge-1.15.2; do
+                bash ./forge-1.12.2/gradlew --no-daemon -p "$target" build
+              done
+              ;;
+            forge-1-16)
+              for target in \
+                forge-1.16.1 forge-1.16.2 forge-1.16.3 \
+                forge-1.16.4 forge-1.16.5; do
+                bash ./forge-1.16.5/gradlew --no-daemon \
+                  -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_8_X64,JAVA_HOME_17_X64 \
+                  -p "$target" build
+              done
+              ;;
+          esac
+
+      - name: Collect release JARs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir release-jars
+
+          while IFS= read -r -d '' jar; do
+            filename="$(basename "$jar")"
+            if [[ -e "release-jars/$filename" ]]; then
+              echo "::error::Duplicate release asset name: $filename"
+              exit 1
+            fi
+            cp "$jar" release-jars/
+          done < <(
+            find . -type f -path '*/build/libs/*.jar' \
+              ! -name '*-dev.jar' \
+              ! -name '*-sources.jar' \
+              ! -name '*-javadoc.jar' \
+              ! -name '*-plain.jar' \
+              ! -name '*-shadow.jar' \
+              -print0
+          )
+
+          if ! compgen -G 'release-jars/*.jar' > /dev/null; then
+            echo '::error::No release JARs were produced.'
+            exit 1
+          fi
+
+      - name: Store release JARs
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-jars-${{ matrix.id }}
+          path: release-jars/*.jar
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    name: Upload JARs to release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+
+    steps:
+      - name: Download release JARs
+        uses: actions/download-artifact@v8
+        with:
+          pattern: release-jars-*
+          path: release-jars
+          merge-multiple: true
+
+      - name: Upload release assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh release upload "$RELEASE_TAG" release-jars/*.jar \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber
