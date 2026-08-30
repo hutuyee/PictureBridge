@@ -61,6 +61,8 @@ Nukkit-MOT 不使用 PictureBridge 客户端协议。
 
 - [安装、配置与常见问题](docs/user-guide.md)
 - [支持版本与 JAR 选择](docs/supported-versions.md)
+- [兼容性与限制](docs/compatibility.md)
+- [构建与开发](docs/development.md)
 - [全部文档](docs/README.md)
 
 ## License
