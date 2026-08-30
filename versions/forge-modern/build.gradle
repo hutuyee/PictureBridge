@@ -88,6 +88,6 @@ subprojects { adapter ->
         inputs.properties props
         filesMatching(['META-INF/mods.toml', 'picturebridge.forge.mixins.json']) { expand props }
     }
-    tasks.named('jar', Jar).configure { finalizedBy 'reobfJar'; from(rootProject.file('../LICENSE')) { rename { 'LICENSE_picturebridge' } } }
+    tasks.named('jar', Jar).configure { finalizedBy 'reobfJar'; from(rootProject.file('../../LICENSE')) { rename { 'LICENSE_picturebridge' } } }
     tasks.withType(JavaCompile).configureEach { options.release = target.java as int; options.encoding = 'UTF-8' }
 }

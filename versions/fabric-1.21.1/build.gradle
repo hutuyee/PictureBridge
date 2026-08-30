@@ -21,7 +21,7 @@ loom {
 // 1.21-1.21.1 retained the 1.20.5-era client API. Reuse that implementation
 // so fixes to the downloader, GIF decoder and chat renderer stay in sync.
 sourceSets.client.java.setSrcDirs([
-        rootProject.file('fabric-1.20.6/src/client/java')
+        rootProject.file('versions/fabric-1.20.6/src/client/java')
 ])
 
 dependencies {

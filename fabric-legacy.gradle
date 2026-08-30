@@ -19,16 +19,16 @@ loom {
 }
 
 def legacyJavaSources = [
-        rootProject.file('fabric-legacy-src/common/java'),
-        rootProject.file("fabric-legacy-src/${target.source}/java"),
-        rootProject.file('forge-common/src/main/java')
+        rootProject.file('versions/fabric-legacy-src/common/java'),
+        rootProject.file("versions/fabric-legacy-src/${target.source}/java"),
+        rootProject.file('versions/forge-common/src/main/java')
 ]
 if (target.source in ['1.19', '1.19.4']) {
-    legacyJavaSources.add(rootProject.file('fabric-legacy-src/1.19-common/java'))
+    legacyJavaSources.add(rootProject.file('versions/fabric-legacy-src/1.19-common/java'))
 }
 sourceSets.client.java.setSrcDirs(legacyJavaSources)
 sourceSets.client.resources.setSrcDirs([
-        rootProject.file('fabric-legacy-resources/src/client/resources')
+        rootProject.file('versions/fabric-legacy-resources/src/client/resources')
 ])
 
 dependencies {

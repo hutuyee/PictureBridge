@@ -89,42 +89,42 @@ jobs:
             neoforge)
               bash ./gradlew --no-daemon \
                 -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME_21_X64,JAVA_HOME_25_X64 \
-                -p neoforge build
+                -p versions/neoforge build
               ;;
             neoforge-1-20-1)
-              bash ./forge-1.16.5/gradlew --no-daemon \
-                -p neoforge-1.20.1 build
+              bash ./versions/forge-1.16.5/gradlew --no-daemon \
+                -p versions/neoforge-1.20.1 build
               ;;
             forge-modern)
-              bash ./forge-1.16.5/gradlew --no-daemon \
+              bash ./versions/forge-1.16.5/gradlew --no-daemon \
                 -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_16_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64 \
-                -p forge-modern build
+                -p versions/forge-modern build
               ;;
             forge-1-8)
-              for target in forge-1.8 forge-1.8.8 forge-1.8.9; do
-                bash ./forge-1.8.9/gradlew --no-daemon -p "$target" build
+              for target in versions/forge-1.8 versions/forge-1.8.8 versions/forge-1.8.9; do
+                bash ./versions/forge-1.8.9/gradlew --no-daemon -p "$target" build
               done
               ;;
             forge-1-9)
-              for target in forge-1.9 forge-1.9.4 forge-1.10 forge-1.10.2; do
+              for target in versions/forge-1.9 versions/forge-1.9.4 versions/forge-1.10 versions/forge-1.10.2; do
                 gradle --no-daemon -p "$target" build
               done
               ;;
             forge-1-11)
               for target in \
-                forge-1.11 forge-1.11.2 \
-                forge-1.12 forge-1.12.1 forge-1.12.2 \
-                forge-1.13.2 \
-                forge-1.14.2 forge-1.14.3 forge-1.14.4 \
-                forge-1.15 forge-1.15.1 forge-1.15.2; do
-                bash ./forge-1.12.2/gradlew --no-daemon -p "$target" build
+                versions/forge-1.11 versions/forge-1.11.2 \
+                versions/forge-1.12 versions/forge-1.12.1 versions/forge-1.12.2 \
+                versions/forge-1.13.2 \
+                versions/forge-1.14.2 versions/forge-1.14.3 versions/forge-1.14.4 \
+                versions/forge-1.15 versions/forge-1.15.1 versions/forge-1.15.2; do
+                bash ./versions/forge-1.12.2/gradlew --no-daemon -p "$target" build
               done
               ;;
             forge-1-16)
               for target in \
-                forge-1.16.1 forge-1.16.2 forge-1.16.3 \
-                forge-1.16.4 forge-1.16.5; do
-                bash ./forge-1.16.5/gradlew --no-daemon \
+                versions/forge-1.16.1 versions/forge-1.16.2 versions/forge-1.16.3 \
+                versions/forge-1.16.4 versions/forge-1.16.5; do
+                bash ./versions/forge-1.16.5/gradlew --no-daemon \
                   -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_8_X64,JAVA_HOME_17_X64 \
                   -p "$target" build
               done

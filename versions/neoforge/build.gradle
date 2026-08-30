@@ -115,7 +115,7 @@ subprojects { adapter ->
     }
 
     tasks.named('jar', Jar).configure {
-        from(rootProject.file('../LICENSE')) {
+        from(rootProject.file('../../LICENSE')) {
             rename { 'LICENSE_picturebridge' }
         }
     }
