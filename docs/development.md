@@ -19,6 +19,17 @@
 
 聚合工程会按目标版本生成 Java 8、16、17、21 或 25 字节码；表中的 Gradle JVM 只是启动相应 Gradle 工程所需的 Java。
 
+## 版本号
+
+模组版本统一在仓库根目录的 `gradle.properties` 中管理，所有构建目标（Fabric 根工程、NeoForge 聚合工程、Forge 聚合工程、NeoForge 1.20.1 以及各旧版 Forge 精确目标）都从该文件读取 `mod_version`：
+
+```properties
+# gradle.properties
+mod_version=1.0.0
+```
+
+发布新版本时只需修改这一处。JAR 文件名、`fabric.mod.json`、`mcmod.info` 和 `mods.toml` 中的版本号都会随构建自动更新；旧版 Forge 各精确目标也通过 `../../gradle.properties` 读取同一版本号。
+
 ## Fabric
 
 根 Gradle 工程包含全部 Fabric 目标，子项目仍使用 `fabric-<版本>` 名称，实际目录位于 `versions/` 下。

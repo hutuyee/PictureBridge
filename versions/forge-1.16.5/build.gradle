@@ -5,7 +5,10 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
-version = mod_version
+def rootProperties = new Properties()
+new File(project.projectDir, '../../gradle.properties').withInputStream { rootProperties.load(it) }
+def modVersion = rootProperties.mod_version
+version = modVersion
 group = 'haaa.picturebridge'
 base.archivesName = 'picturebridge-forge-1.16.5'
 
@@ -31,7 +34,7 @@ dependencies {
 
 tasks.named('processResources', ProcessResources).configure {
     def replacements = [
-            version: mod_version,
+            version: modVersion,
             minecraft_version: minecraft_version,
             forge_version: forge_version
     ]

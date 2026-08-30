@@ -37,7 +37,11 @@ subprojects { adapter ->
     apply plugin: 'net.neoforged.moddev'
 
     group = 'haaa.picturebridge'
-    version = rootProject.mod_version
+
+    def rootProperties = new Properties()
+    new File(project.projectDir, '../../gradle.properties').withInputStream { rootProperties.load(it) }
+    def modVersion = rootProperties.mod_version
+    version = modVersion
 
     base {
         archivesName = "picturebridge-${adapter.name}"
@@ -84,7 +88,7 @@ subprojects { adapter ->
     }
 
     def metadataProperties = [
-            mod_version       : rootProject.mod_version,
+            mod_version       : modVersion,
             minecraft_version : target.minecraft,
             neoforge_version   : target.neoforge,
             java_compatibility : "JAVA_${target.java}",

@@ -39,7 +39,11 @@ subprojects { adapter ->
     apply plugin: 'net.minecraftforge.gradle'
 
     group = 'haaa.picturebridge'
-    version = rootProject.mod_version
+
+    def rootProperties = new Properties()
+    new File(project.projectDir, '../../gradle.properties').withInputStream { rootProperties.load(it) }
+    def modVersion = rootProperties.mod_version
+    version = modVersion
     base { archivesName = "picturebridge-${adapter.name}" }
     java.toolchain.languageVersion = JavaLanguageVersion.of(target.java as int)
 
@@ -76,7 +80,7 @@ subprojects { adapter ->
     dependencies { minecraft "net.minecraftforge:forge:${target.minecraft}-${target.forge}" }
 
     def props = [
-            mod_version: rootProject.mod_version,
+            mod_version: modVersion,
             minecraft_version: target.minecraft,
             forge_version: target.forge,
             forge_major: target.forge.tokenize('.')[0],

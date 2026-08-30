@@ -10,7 +10,10 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 
 def target = project.ext.forgeTarget
-version = '0.4.0'
+def rootProperties = new Properties()
+new File(project.projectDir, '../../gradle.properties').withInputStream { rootProperties.load(it) }
+def modVersion = rootProperties.mod_version
+version = modVersion
 group = 'haaa.picturebridge'
 base.archivesName = "picturebridge-forge-${target.minecraft}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
