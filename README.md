@@ -57,6 +57,12 @@ Nukkit-MOT 不使用 PictureBridge 客户端协议。
 
 安装前请确认下载文件对应的 Minecraft 版本。部分 Fabric JAR 可兼容一段连续版本，Forge 和 NeoForge JAR 通常对应一个精确版本。
 
+## 文档
+
+- [安装、配置与常见问题](docs/user-guide.md)
+- [支持版本与 JAR 选择](docs/supported-versions.md)
+- [全部文档](docs/README.md)
+
 ## License
 
 [MIT](LICENSE)
