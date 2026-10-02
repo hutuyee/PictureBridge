@@ -2,18 +2,24 @@ apply plugin: 'net.fabricmc.fabric-loom-remap'
 apply plugin: 'maven-publish'
 
 def target = project.ext.fabricTarget
+// Minecraft 1.18 introduced the bundled server jars required for splitting.
+def splitClientSources = target.minecraft.tokenize('.')[1].toInteger() >= 18
 
 base {
     archivesName = "picturebridge-fabric-${target.minecraft}"
 }
 
 loom {
-    splitEnvironmentSourceSets()
+    if (splitClientSources) {
+        splitEnvironmentSourceSets()
+    }
 
     mods {
         picturebridge {
             sourceSet sourceSets.main
-            sourceSet sourceSets.client
+            if (splitClientSources) {
+                sourceSet sourceSets.client
+            }
         }
     }
 }
@@ -26,8 +32,9 @@ def legacyJavaSources = [
 if (target.source in ['1.19', '1.19.4']) {
     legacyJavaSources.add(rootProject.file('versions/fabric-legacy-src/1.19-common/java'))
 }
-sourceSets.client.java.setSrcDirs(legacyJavaSources)
-sourceSets.client.resources.setSrcDirs([
+def modSourceSet = splitClientSources ? sourceSets.client : sourceSets.main
+modSourceSet.java.setSrcDirs(legacyJavaSources)
+modSourceSet.resources.setSrcDirs([
         rootProject.file('versions/fabric-legacy-resources/src/client/resources')
 ])
 
@@ -45,7 +52,7 @@ def metadataProperties = [
         java_compatibility: "JAVA_${target.java}"
 ]
 
-tasks.named('processClientResources') {
+tasks.named(modSourceSet.processResourcesTaskName) {
     inputs.properties metadataProperties
     filesMatching(['fabric.mod.json', 'picturebridge.client.mixins.json']) {
         expand metadataProperties
