@@ -2,7 +2,7 @@ buildscript {
     repositories { maven { url='https://maven.minecraftforge.net/' }; mavenCentral() }
     dependencies { classpath 'net.minecraftforge.gradle:ForgeGradle:3.+' }
 }
-apply plugin:'net.minecraftforge.gradle'
+apply plugin: net.minecraftforge.gradle.userdev.UserDevPlugin
 
 def target=project.ext.forgeTarget
 def rootProperties = new Properties()

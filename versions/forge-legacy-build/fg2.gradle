@@ -9,7 +9,7 @@ buildscript {
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: net.minecraftforge.gradle.user.patcherUser.forge.ForgePlugin
 
 def target = project.ext.forgeTarget
 def rootProperties = new Properties()
