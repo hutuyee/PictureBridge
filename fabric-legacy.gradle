@@ -40,7 +40,9 @@ modSourceSet.resources.setSrcDirs([
 
 dependencies {
     minecraft "com.mojang:minecraft:${target.minecraft}"
-    mappings "net.fabricmc:yarn:${target.yarn}:v2"
+    // These early Yarn v2 artifacts have the intermediary and named columns reversed.
+    def yarnClassifier = target.minecraft in ['1.14', '1.14.1', '1.14.2'] ? '' : ':v2'
+    mappings "net.fabricmc:yarn:${target.yarn}${yarnClassifier}"
     modImplementation "net.fabricmc:fabric-loader:${target.loader}"
 }
 
