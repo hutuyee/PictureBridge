@@ -3,12 +3,13 @@ name: Build release
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.event.release.id }}
+  group: release-${{ github.event.release.id || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -24,11 +25,17 @@ jobs:
             java: "25"
             gradle: wrapper
           - id: neoforge
-            name: NeoForge 1.20.2-26.2
+            name: NeoForge 1.20.4, 1.20.6-26.2
             java: |-
               17
               21
               25
+            gradle: wrapper
+          - id: neoforge-legacy
+            name: NeoForge 1.20.2, 1.20.3, 1.20.5
+            java: |-
+              17
+              21
             gradle: wrapper
           - id: neoforge-1-20-1
             name: NeoForge 1.20.1
@@ -61,10 +68,10 @@ jobs:
             gradle: wrapper
 
     steps:
-      - name: Checkout release tag
+      - name: Checkout build revision
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ github.event.release.tag_name || github.ref }}
 
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -84,12 +91,17 @@ jobs:
 
           case "${{ matrix.id }}" in
             fabric)
-              bash ./gradlew --no-daemon build
+              bash ./gradlew --no-daemon --continue build
               ;;
             neoforge)
               bash ./gradlew --no-daemon \
                 -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME_21_X64,JAVA_HOME_25_X64 \
-                -p versions/neoforge build
+                -p versions/neoforge --continue build
+              ;;
+            neoforge-legacy)
+              bash ./versions/neoforge-legacy/gradlew --no-daemon \
+                -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64,JAVA_HOME_21_X64 \
+                -p versions/neoforge-legacy --continue build
               ;;
             neoforge-1-20-1)
               bash ./versions/forge-1.16.5/gradlew --no-daemon \
@@ -98,36 +110,44 @@ jobs:
             forge-modern)
               bash ./versions/forge-1.16.5/gradlew --no-daemon \
                 -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_16_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64 \
-                -p versions/forge-modern build
+                -p versions/forge-modern --continue build
               ;;
             forge-1-8)
+              build_failed=0
               for target in versions/forge-1.8 versions/forge-1.8.8 versions/forge-1.8.9; do
-                bash ./versions/forge-1.8.9/gradlew --no-daemon -p "$target" build
+                bash ./versions/forge-1.8.9/gradlew --no-daemon -p "$target" build || build_failed=1
               done
+              exit "$build_failed"
               ;;
             forge-1-9)
+              build_failed=0
               for target in versions/forge-1.9 versions/forge-1.9.4 versions/forge-1.10 versions/forge-1.10.2; do
-                gradle --no-daemon -p "$target" build
+                gradle --no-daemon -p "$target" build || build_failed=1
               done
+              exit "$build_failed"
               ;;
             forge-1-11)
+              build_failed=0
               for target in \
                 versions/forge-1.11 versions/forge-1.11.2 \
                 versions/forge-1.12 versions/forge-1.12.1 versions/forge-1.12.2 \
                 versions/forge-1.13.2 \
                 versions/forge-1.14.2 versions/forge-1.14.3 versions/forge-1.14.4 \
                 versions/forge-1.15 versions/forge-1.15.1 versions/forge-1.15.2; do
-                bash ./versions/forge-1.12.2/gradlew --no-daemon -p "$target" build
+                bash ./versions/forge-1.12.2/gradlew --no-daemon -p "$target" build || build_failed=1
               done
+              exit "$build_failed"
               ;;
             forge-1-16)
+              build_failed=0
               for target in \
                 versions/forge-1.16.1 versions/forge-1.16.2 versions/forge-1.16.3 \
                 versions/forge-1.16.4 versions/forge-1.16.5; do
                 bash ./versions/forge-1.16.5/gradlew --no-daemon \
                   -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_8_X64,JAVA_HOME_17_X64 \
-                  -p "$target" build
+                  -p "$target" build || build_failed=1
               done
+              exit "$build_failed"
               ;;
           esac
 
@@ -169,6 +189,7 @@ jobs:
 
   publish:
     name: Upload JARs to release
+    if: github.event_name == 'release'
     needs: build
     runs-on: ubuntu-latest
     permissions:
