@@ -11,7 +11,8 @@
 | 构建范围 | Gradle 入口 | Gradle JVM | 需要的 Java toolchain |
 | --- | --- | --- | --- |
 | Fabric 1.14–26.2 | 仓库根目录 | JDK 25 | — |
-| NeoForge 1.20.2–26.2 | `versions/neoforge/` | JDK 25 | JDK 17、21、25 |
+| NeoForge 1.20.4、1.20.6–26.2 | `versions/neoforge/` | JDK 25 | JDK 17、21、25 |
+| NeoForge 1.20.2、1.20.3、1.20.5 | `versions/neoforge-legacy/` | JDK 21 | JDK 17、21 |
 | NeoForge 1.20.1 | `versions/neoforge-1.20.1/` | JDK 17 | JDK 17 |
 | Forge 1.17.1–1.21.11 | `versions/forge-modern/` | JDK 21 | JDK 16、17、21 |
 | Forge 1.8–1.15.2 | `versions/` 下各精确版本目录 | JDK 8 | JDK 8 |
@@ -56,7 +57,7 @@ mod_version=1.0.0
 
 ## NeoForge
 
-### Minecraft 1.20.2–26.2
+### Minecraft 1.20.4、1.20.6–26.2
 
 这些目标由 `versions/neoforge/` 聚合工程管理。
 
@@ -77,6 +78,16 @@ mod_version=1.0.0
 ```powershell
 .\versions\neoforge\gradlew.bat :neoforge-1.21.4:runClient
 ```
+
+### Minecraft 1.20.2、1.20.3、1.20.5
+
+这些版本没有 ModDevGradle 所需的依赖包，使用独立的 NeoGradle 聚合工程：
+
+```powershell
+.\versions\neoforge-legacy\gradlew.bat -p versions/neoforge-legacy build
+```
+
+只构建一个目标时，将 `build` 替换为 `:neoforge-1.20.2:build` 等对应任务。
 
 ### Minecraft 1.20.1
 
