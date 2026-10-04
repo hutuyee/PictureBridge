@@ -39,7 +39,7 @@ final class AnimatedNeoTexture implements AutoCloseable {
             created = new DynamicTexture(() -> "PictureBridge remote image", upload);
             this.texture = created;
             this.location = ResourceLocation.fromNamespaceAndPath(
-                    PictureBridgeNeoForge.MOD_ID, "remote/" + IDS.incrementAndGet());
+                    "picturebridge", "remote/" + IDS.incrementAndGet());
             minecraft.getTextureManager().register(location, created);
             this.nextFrameAtNanos = System.nanoTime()
                     + decoded.frames().get(0).durationMillis() * 1_000_000L;

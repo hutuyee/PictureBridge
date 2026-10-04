@@ -78,7 +78,7 @@ public final class ImageViewerScreen extends Screen {
     @Override
     public void onClose() {
         if (minecraft != null) {
-            minecraft.setScreen(parent);
+            ScreenAccess.setScreen(minecraft, parent);
         }
     }
 
@@ -279,7 +279,7 @@ public final class ImageViewerScreen extends Screen {
     private void finishLoad(int requestGeneration,
                             RemoteImageLoader.DecodedImage decoded,
                             Throwable throwable) {
-        if (requestGeneration != generation || minecraft == null || minecraft.screen != this) {
+        if (requestGeneration != generation || minecraft == null || !ScreenAccess.isCurrent(minecraft, this)) {
             if (decoded != null) {
                 decoded.close();
             }

@@ -41,9 +41,8 @@ public final class ImageViewerScreen extends BaseImageViewerScreen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY,
-                                 double horizontalAmount, double verticalAmount) {
-        return handleImageScroll(mouseX, mouseY, verticalAmount)
-                || super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return handleImageScroll(mouseX, mouseY, amount)
+                || super.mouseScrolled(mouseX, mouseY, amount);
     }
 }

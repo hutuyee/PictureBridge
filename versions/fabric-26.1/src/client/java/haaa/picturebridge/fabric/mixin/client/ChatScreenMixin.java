@@ -2,6 +2,7 @@ package haaa.picturebridge.fabric.mixin.client;
 
 import haaa.picturebridge.fabric.ShitBotImageLink;
 import haaa.picturebridge.fabric.client.ImageViewerScreen;
+import haaa.picturebridge.fabric.client.ScreenAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -30,7 +31,7 @@ abstract class ChatScreenMixin {
         }
 
         Minecraft client = Minecraft.getInstance();
-        client.setScreen(new ImageViewerScreen((Screen) (Object) this, imageUri));
+        ScreenAccess.setScreen(client, new ImageViewerScreen((Screen) (Object) this, imageUri));
         callback.setReturnValue(true);
     }
 }

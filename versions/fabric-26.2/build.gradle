@@ -18,7 +18,10 @@ loom {
     }
 }
 
-sourceSets.client.java.setSrcDirs([rootProject.file('versions/fabric-26.1/src/client/java')])
+sourceSets.client.java.setSrcDirs([
+        rootProject.file('versions/fabric-26.1/src/client/java'),
+        rootProject.file('versions/fabric-screen-access/26.2/java')
+])
 sourceSets.client.resources.setSrcDirs([rootProject.file('versions/fabric-26.1/src/client/resources')])
 
 dependencies {

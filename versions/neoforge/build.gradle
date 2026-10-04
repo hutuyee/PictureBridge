@@ -11,7 +11,7 @@ def targets = [
         'neoforge-1.21.2' : [minecraft: '1.21.2', neoforge: '21.2.1-beta', source: '1.21.4', java: 21, metadata: 'loader'],
         'neoforge-1.21.3' : [minecraft: '1.21.3', neoforge: '21.3.97', source: '1.21.4', java: 21, metadata: 'loader'],
         'neoforge-1.21.4' : [minecraft: '1.21.4', neoforge: '21.4.157', source: '1.21.4', java: 21, metadata: 'loader'],
-        'neoforge-1.21.5' : [minecraft: '1.21.5', neoforge: '21.5.98', source: '1.21.8', java: 21, metadata: 'modern'],
+        'neoforge-1.21.5' : [minecraft: '1.21.5', neoforge: '21.5.98', source: '1.21.5', java: 21, metadata: 'modern'],
         'neoforge-1.21.6' : [minecraft: '1.21.6', neoforge: '21.6.20-beta', source: '1.21.8', java: 21, metadata: 'modern'],
         'neoforge-1.21.7' : [minecraft: '1.21.7', neoforge: '21.7.25-beta', source: '1.21.8', java: 21, metadata: 'modern'],
         'neoforge-1.21.8' : [minecraft: '1.21.8', neoforge: '21.8.54', source: '1.21.8', java: 21, metadata: 'modern'],
@@ -50,6 +50,7 @@ subprojects { adapter ->
     if (target.source == '26.1') {
         javaSources = [
                 rootProject.file('../fabric-26.1/src/client/java'),
+                rootProject.file("../fabric-screen-access/${target.minecraft == '26.2' ? '26.2' : '26.1'}/java"),
                 rootProject.file('../neoforge-src/26.1/java'),
                 rootProject.file('../neoforge-src/entry/java')
         ]
@@ -62,12 +63,17 @@ subprojects { adapter ->
         if (target.source in ['1.20.4', '1.20.6', '1.21.1', '1.21.4']) {
             javaSources.add(rootProject.file('../neoforge-src/shared-old-chat/java'))
             javaSources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
-        } else if (target.source in ['1.21.8', '1.21.11']) {
+        } else if (target.source in ['1.21.5', '1.21.8', '1.21.11']) {
             javaSources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
             javaSources.add(rootProject.file('../neoforge-src/shared-adt-chat/java'))
         }
     }
     sourceSets.main.java.setSrcDirs(javaSources)
+    if (target.minecraft == '1.21.11') {
+        def oldTexture = rootProject.file('../neoforge-src/shared-adt-chat/java/haaa/picturebridge/neoforge/AnimatedNeoTexture.java').canonicalFile
+        sourceSets.main.java.exclude { it.file.canonicalFile == oldTexture }
+        sourceSets.main.java.srcDir(rootProject.file('../neoforge-src/1.21.11-texture/java'))
+    }
     sourceSets.main.resources.setSrcDirs([
             rootProject.file('../neoforge-common/src/main/resources'),
             rootProject.file('../neoforge-metadata/common'),

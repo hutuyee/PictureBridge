@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import haaa.picturebridge.forge.common.DecodedImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
@@ -21,7 +21,7 @@ final class AnimatedNeoTexture implements AutoCloseable {
     private final DecodedImage decoded;
     private final List<NativeImage> frames = new ArrayList<>();
     private final DynamicTexture texture;
-    private final ResourceLocation location;
+    private final Identifier location;
     private int frameIndex;
     private long nextFrameAtNanos;
 
@@ -36,9 +36,10 @@ final class AnimatedNeoTexture implements AutoCloseable {
             }
             upload = new NativeImage(decoded.width(), decoded.height(), true);
             upload.copyFrom(frames.get(0));
-            created = new DynamicTexture(upload);
+            created = new DynamicTexture(() -> "PictureBridge remote image", upload);
             this.texture = created;
-            this.location = ResourceLocation.tryParse("picturebridge:remote/" + IDS.incrementAndGet());
+            this.location = Identifier.fromNamespaceAndPath(
+                    "picturebridge", "remote/" + IDS.incrementAndGet());
             minecraft.getTextureManager().register(location, created);
             this.nextFrameAtNanos = System.nanoTime()
                     + decoded.frames().get(0).durationMillis() * 1_000_000L;
@@ -53,7 +54,7 @@ final class AnimatedNeoTexture implements AutoCloseable {
         }
     }
 
-    ResourceLocation location() { return location; }
+    Identifier location() { return location; }
     int width() { return decoded.width(); }
     int height() { return decoded.height(); }
     int frameCount() { return decoded.frames().size(); }

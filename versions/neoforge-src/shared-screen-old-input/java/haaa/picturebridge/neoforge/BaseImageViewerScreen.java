@@ -224,7 +224,7 @@ abstract class BaseImageViewerScreen extends Screen {
             texture = new AnimatedNeoTexture(minecraft, decoded);
             state = State.READY;
         } catch (RuntimeException exception) {
-            PictureBridgeNeoForge.LOGGER.warn("Failed to create texture for {}", imageUri, exception);
+            com.mojang.logging.LogUtils.getLogger().warn("Failed to create texture for {}", imageUri, exception);
             state = State.ERROR;
             errorText = Component.translatable("picturebridge.error.decode");
         }
