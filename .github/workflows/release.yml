@@ -41,12 +41,25 @@ jobs:
             name: NeoForge 1.20.1
             java: "17"
             gradle: wrapper
-          - id: forge-modern
-            name: Forge 1.17.1-1.21.10
+          - id: forge-modern-1
+            name: Forge 1.17.1-1.19.4
+            targets: "1.17.1 1.18 1.18.1 1.18.2 1.19 1.19.1 1.19.2 1.19.3 1.19.4"
             java: |-
               16
               17
               21
+            gradle: wrapper
+          - id: forge-modern-2
+            name: Forge 1.20-1.21.1
+            targets: "1.20 1.20.1 1.20.2 1.20.3 1.20.4 1.20.6 1.21 1.21.1"
+            java: |-
+              17
+              21
+            gradle: wrapper
+          - id: forge-modern-3
+            name: Forge 1.21.3-1.21.10
+            targets: "1.21.3 1.21.4 1.21.5 1.21.6 1.21.7 1.21.8 1.21.9 1.21.10"
+            java: "21"
             gradle: wrapper
           - id: forge-1-21-11
             name: Forge 1.21.11
@@ -88,7 +101,7 @@ jobs:
         with:
           gradle-version: ${{ matrix.gradle }}
           # ForgeGradle 6 can leave incomplete generated artifacts after a failed build.
-          cache-disabled: ${{ matrix.id == 'forge-modern' }}
+          cache-disabled: ${{ startsWith(matrix.id, 'forge-modern') }}
 
       - name: Build
         shell: bash
@@ -113,10 +126,14 @@ jobs:
               bash ./versions/forge-1.16.5/gradlew --no-daemon \
                 -p versions/neoforge-1.20.1 build
               ;;
-            forge-modern)
+            forge-modern-*)
+              tasks=()
+              for version in ${{ matrix.targets }}; do
+                tasks+=(":forge-$version:build")
+              done
               bash ./versions/forge-1.16.5/gradlew --no-daemon \
                 -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_16_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64 \
-                -p versions/forge-modern --continue build
+                -p versions/forge-modern --continue "${tasks[@]}"
               ;;
             forge-1-21-11)
               bash ./gradlew --no-daemon -p versions/forge-1.21.11 build
