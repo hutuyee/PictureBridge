@@ -53,10 +53,10 @@ public final class ImageViewerScreen extends Screen {
         fill(area.left, area.top, area.right, area.bottom, 0xB0101115);
         border(area, 0xFF3A3D46);
         if (texture != null) drawImage(area);
-        else drawCenteredString(textRenderer, error.isEmpty() ? tr("picturebridge.status.loading", dots()) : error,
+        else drawCenteredString(font, error.isEmpty() ? tr("picturebridge.status.loading", dots()) : error,
                 area.cx(), area.cy() - 4, error.isEmpty() ? 0xD9E2F2 : 0xFF6B6B);
-        drawCenteredString(textRenderer, tr("picturebridge.screen.title"), width / 2, 8, 0xFFFFFF);
-        drawCenteredString(textRenderer, tr(System.nanoTime() < copiedUntil
+        drawCenteredString(font, tr("picturebridge.screen.title"), width / 2, 8, 0xFFFFFF);
+        drawCenteredString(font, tr(System.nanoTime() < copiedUntil
                         ? "picturebridge.status.copied" : "picturebridge.status.hint"),
                 width / 2, Math.max(0, height - 45), 0xA0A7B4);
         super.render(mouseX, mouseY, delta);
@@ -69,18 +69,18 @@ public final class ImageViewerScreen extends Screen {
         int h = Math.max(1, (int) Math.round(texture.height() * scale));
         int x = (int) Math.round(area.cx() - w / 2D + panX);
         int y = (int) Math.round(area.cy() - h / 2D + panY);
-        int guiScale = Math.max(1, (int) client.getWindow().getScaleFactor());
+        int guiScale = Math.max(1, (int) minecraft.getWindow().getScaleFactor());
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor((area.left + 1) * guiScale, (height - area.bottom + 1) * guiScale,
                 Math.max(1, area.width() - 2) * guiScale, Math.max(1, area.height() - 2) * guiScale);
-        client.getTextureManager().bindTexture(texture.identifier());
-        RenderSystem.color4f(1F, 1F, 1F, 1F);
+        minecraft.getTextureManager().bindTexture(texture.identifier());
+        GL11.glColor4f(1F, 1F, 1F, 1F);
         blit(x, y, 0F, 0F, w, h, texture.width(), texture.height());
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         String status = texture.animated()
                 ? tr("picturebridge.status.ready_animated", texture.width(), texture.height(), texture.frameCount(), Math.round(zoom * 100))
                 : tr("picturebridge.status.ready", texture.width(), texture.height(), Math.round(zoom * 100));
-        textRenderer.drawWithShadow(status, width - textRenderer.getStringWidth(status) - 8, 8, 0xB8C7D9);
+        font.drawWithShadow(status, width - font.getStringWidth(status) - 8, 8, 0xB8C7D9);
     }
 
     @Override
@@ -126,7 +126,7 @@ public final class ImageViewerScreen extends Screen {
     @Override
     public void onClose() {
         destroyTexture();
-        client.openScreen(parent);
+        minecraft.openScreen(parent);
     }
 
     @Override
@@ -138,17 +138,17 @@ public final class ImageViewerScreen extends Screen {
         reset();
         destroyTexture();
         RemoteImageLoader.INSTANCE.loadImage(uri, refresh).whenComplete((decoded, throwable) ->
-                client.execute(() -> finish(request, decoded, throwable)));
+                minecraft.execute(() -> finish(request, decoded, throwable)));
     }
 
     private void finish(int request, DecodedImage decoded, Throwable throwable) {
         if (request != generation) return;
         if (throwable != null || decoded == null) error = errorText(throwable);
-        else texture = new AnimatedFabricTexture(client, decoded);
+        else texture = new AnimatedFabricTexture(minecraft, decoded);
     }
 
     private void copyUrl() {
-        client.keyboard.setClipboard(uri.toASCIIString());
+        minecraft.keyboard.setClipboard(uri.toASCIIString());
         copiedUntil = System.nanoTime() + 2_000_000_000L;
     }
 

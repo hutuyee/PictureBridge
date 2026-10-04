@@ -16,16 +16,16 @@ import java.net.URI;
 
 @Mixin(ChatScreen.class)
 abstract class ChatScreenMixin {
-    @Shadow protected MinecraftClient client;
+    @Shadow protected MinecraftClient minecraft;
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void picturebridge$openImage(double mouseX, double mouseY, int button,
                                          CallbackInfoReturnable<Boolean> callback) {
-        if (button != 0 || client == null) return;
-        Text component = client.inGameHud.getChatHud().getText(mouseX, mouseY);
+        if (button != 0 || minecraft == null) return;
+        Text component = minecraft.inGameHud.getChatHud().getText(mouseX, mouseY);
         URI uri = component == null ? null : ShitBotImageLink.find(component.getStyle());
         if (uri == null) return;
-        client.openScreen(new ImageViewerScreen((Screen) (Object) this, uri));
+        minecraft.openScreen(new ImageViewerScreen((Screen) (Object) this, uri));
         callback.setReturnValue(true);
     }
 }

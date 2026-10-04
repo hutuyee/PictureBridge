@@ -9,6 +9,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -44,10 +45,10 @@ public final class ImageViewerScreen extends Screen {
         fill(matrices, 0, 0, width, height, 0xC0101115);
         Area a = area(); fill(matrices, a.left, a.top, a.right, a.bottom, 0xB0101115); border(matrices, a, 0xFF3A3D46);
         if (texture != null) drawImage(matrices, a);
-        else drawCenteredText(matrices, textRenderer, error.isEmpty() ? tr("picturebridge.status.loading", dots()) : error,
+        else drawCenteredText(matrices, textRenderer, new LiteralText(error.isEmpty() ? tr("picturebridge.status.loading", dots()) : error),
                 a.cx(), a.cy() - 4, error.isEmpty() ? 0xD9E2F2 : 0xFF6B6B);
         drawCenteredText(matrices, textRenderer, title, width / 2, 8, 0xFFFFFF);
-        drawCenteredText(matrices, textRenderer, tr(System.nanoTime() < copiedUntil ? "picturebridge.status.copied" : "picturebridge.status.hint"),
+        drawCenteredText(matrices, textRenderer, new LiteralText(tr(System.nanoTime() < copiedUntil ? "picturebridge.status.copied" : "picturebridge.status.hint")),
                 width / 2, Math.max(0, height - 45), 0xA0A7B4);
         super.render(matrices, mouseX, mouseY, delta);
     }

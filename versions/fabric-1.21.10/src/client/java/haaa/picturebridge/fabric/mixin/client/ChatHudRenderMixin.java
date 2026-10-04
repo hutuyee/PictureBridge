@@ -15,10 +15,10 @@ abstract class ChatHudRenderMixin {
             method = "render(Lnet/minecraft/client/gui/DrawContext;IIIZ)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/OrderedText;III)I"
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/OrderedText;III)V"
             )
     )
-    private int picturebridge$renderInlineMedia(DrawContext context,
+    private void picturebridge$renderInlineMedia(DrawContext context,
                                                  TextRenderer textRenderer,
                                                  OrderedText text,
                                                  int x,
@@ -26,6 +26,6 @@ abstract class ChatHudRenderMixin {
                                                  int color) {
         float opacity = (color >>> 24 & 0xFF) / 255.0F;
         ChatEmojiManager.INSTANCE.renderLine(context, textRenderer, text, x, y, opacity);
-        return context.drawTextWithShadow(textRenderer, text, x, y, color);
+        context.drawTextWithShadow(textRenderer, text, x, y, color);
     }
 }

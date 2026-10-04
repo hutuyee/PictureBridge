@@ -26,9 +26,47 @@ loom {
 
 def legacyJavaSources = [
         rootProject.file('versions/fabric-legacy-src/common/java'),
-        rootProject.file("versions/fabric-legacy-src/${target.source}/java"),
         rootProject.file('versions/forge-common/src/main/java')
 ]
+def versionSources = rootProject.file("versions/fabric-legacy-src/${target.source}/java")
+if (target.minecraft.startsWith('1.14') || target.minecraft == '1.17') {
+    // Early Yarn releases use different names for the same client APIs.
+    // Keep one implementation, and expose the generated sources to Gradle/IDEs.
+    def minecraftVersion = target.minecraft
+    def prepareSources = tasks.register('prepareLegacySources', Sync) {
+        from versionSources
+        into layout.buildDirectory.dir('generated/sources/legacy/java')
+        filteringCharset = 'UTF-8'
+        inputs.property 'minecraftVersion', minecraftVersion
+        filter { String line ->
+            if (minecraftVersion.startsWith('1.14')) {
+                line = line.replace('minecraft.getWindow()', 'minecraft.window')
+            }
+            if (minecraftVersion in ['1.14', '1.14.1', '1.14.2', '1.14.3']) {
+                line = line.replace('setPixelRgba(', 'setPixelRGBA(')
+            }
+            if (minecraftVersion in ['1.14', '1.14.1', '1.14.2']) {
+                line = line.replace('net.minecraft.text.', 'net.minecraft.network.chat.')
+                        .replace('TranslatableText', 'TranslatableComponent')
+                        .replaceAll(/\bText\b/, 'Component')
+                        .replace('.asString()', '.getString()')
+                        .replace('.getText(', '.getTextComponentAt(')
+            }
+            if (minecraftVersion == '1.14') {
+                line = line.replace('net.minecraft.client.gui.screen.Screen', 'net.minecraft.client.gui.Screen')
+                        .replace('net.minecraft.client.gui.screen.ChatScreen', 'net.minecraft.client.gui.ingame.ChatScreen')
+            }
+            if (minecraftVersion == '1.17') {
+                line = line.replace('.setScreen(', '.openScreen(')
+                        .replace('.setColor(', '.setPixelColor(')
+            }
+            return line
+        }
+    }
+    legacyJavaSources.add(prepareSources)
+} else {
+    legacyJavaSources.add(versionSources)
+}
 if (target.source in ['1.19', '1.19.4']) {
     legacyJavaSources.add(rootProject.file('versions/fabric-legacy-src/1.19-common/java'))
 }
