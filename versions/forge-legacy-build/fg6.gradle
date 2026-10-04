@@ -18,8 +18,49 @@ group = 'haaa.picturebridge'
 base.archivesName = "picturebridge-forge-${target.minecraft}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
+def mappingChannel = 'official'
+if (target.minecraft == '1.16.1') {
+    // Forge 32 adds getHeight(), which collides with Mojang's name for
+    // func_238483_d_. MCP calls the vanilla method getHeightRealms instead.
+    // Override only that mapping so both compilation and reobfuscation see
+    // distinct methods, without changing Forge's runtime classes.
+    def providers = extensions.getByType(net.minecraftforge.gradle.mcp.ChannelProvidersExtension)
+    def official = providers.getProvider('official')
+    providers.addProvider([
+            getChannels: { Collections.singleton('officialfix') },
+            getMappingsFile: { repo, mappingProject, channel, mappingVersion ->
+                def original = official.getMappingsFile(repo, mappingProject, 'official', mappingVersion)
+                if (original == null) return null
+                def output = mappingProject.file("build/mappings/officialfix-${mappingVersion}.zip")
+                output.parentFile.mkdirs()
+                new java.util.zip.ZipFile(original).withCloseable { input ->
+                    new java.util.zip.ZipOutputStream(new FileOutputStream(output)).withCloseable { zip ->
+                        input.entries().each { entry ->
+                            def bytes = input.getInputStream(entry).withCloseable { it.bytes }
+                            if (entry.name == 'methods.csv') {
+                                def csv = new String(bytes, 'UTF-8')
+                                def collision = 'func_238483_d_,getHeight,'
+                                if (!csv.contains(collision)) {
+                                    throw new GradleException('Missing expected Forge 1.16.1 getHeight mapping')
+                                }
+                                bytes = csv.replace(collision, 'func_238483_d_,getHeightRealms,').getBytes('UTF-8')
+                            }
+                            def copy = new java.util.zip.ZipEntry(entry.name)
+                            copy.time = 0
+                            zip.putNextEntry(copy)
+                            zip.write(bytes)
+                            zip.closeEntry()
+                        }
+                    }
+                }
+                return output
+            }
+    ] as net.minecraftforge.gradle.mcp.ChannelProvider)
+    mappingChannel = 'officialfix'
+}
+
 minecraft {
-    mappings channel: 'official', version: target.minecraft
+    mappings channel: mappingChannel, version: target.minecraft
     runs {
         client {
             workingDirectory project.file('run')

@@ -24,6 +24,11 @@ minecraft {
     version = target.coordinate
     runDir = 'run'
     mappings = target.mappings
+    if (target.minecraft in ['1.11', '1.11.2']) {
+        // MCP stable_32 renamed this inherited field in the shared 1.9 screen.
+        replace 'fontRendererObj', 'fontRenderer'
+        replaceIn 'ImageViewerScreen.java'
+    }
 }
 
 sourceSets.main.java.setSrcDirs([

@@ -16,14 +16,20 @@ minecraft {
     runs { client { workingDirectory project.file('run') } }
 }
 sourceSets.main.java.setSrcDirs([project.file("../forge-legacy-src/${target.source}/src/main/java"),project.file('../forge-common/src/main/java')])
+if (target.minecraft in ['1.14.2', '1.14.3', '1.14.4', '1.15']) {
+    def windowAccess = target.minecraft == '1.15' ? 'minecraft.func_228018_at_()' : 'minecraft.mainWindow'
+    def prepareSources = tasks.create('prepareLegacySources', Sync) {
+        from project.file('../forge-legacy-src/1.14/src/main/java')
+        into project.file("$buildDir/generated/sources/legacy/java")
+        filteringCharset = 'UTF-8'
+        inputs.property 'windowAccess', windowAccess
+        filter { String line -> line.replace('minecraft.getMainWindow()', windowAccess) }
+    }
+    sourceSets.main.java.setSrcDirs([prepareSources, project.file('../forge-common/src/main/java')])
+}
 sourceSets.main.resources.setSrcDirs([project.file('../forge-legacy-build/fg3-resources'),project.file('../neoforge-common/src/main/resources')])
 dependencies { minecraft "net.minecraftforge:forge:${target.minecraft}-${target.forge}" }
 def props=[mod_version:project.version,minecraft_version:target.minecraft,forge_version:target.forge,forge_major:target.forge.tokenize('.')[0]]
 processResources { inputs.properties props; filesMatching(['META-INF/mods.toml','pack.mcmeta']){expand props} }
 jar.finalizedBy('reobfJar')
 tasks.withType(JavaCompile){options.encoding='UTF-8'}
-if(target.source=='1.13'){
-    compileJava.source fileTree(project.file('../forge-legacy-src/1.9/src/main/java')){
-        include 'haaa/picturebridge/forge/ShitBotImageLink.java'
-    }
-}
