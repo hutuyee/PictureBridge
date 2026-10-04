@@ -1,9 +1,9 @@
 package haaa.picturebridge.forge;
 
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.event.HoverEvent;
+import net.minecraft.util.text.Style;
 
 import java.net.URI;
 import java.util.Locale;
@@ -22,7 +22,7 @@ final class ShitBotImageLink {
             return null;
         }
         if (!isHttp(uri) || style.getHoverEvent() == null) return null;
-        Component hover = style.getHoverEvent().getValue(HoverEvent.Action.SHOW_TEXT);
+        ITextComponent hover = style.getHoverEvent().getValue(HoverEvent.Action.SHOW_TEXT);
         if (hover == null) return null;
         String marker = hover.getString().toLowerCase(Locale.ROOT);
         return marker.contains("qq 图片") || marker.contains("qq image")

@@ -1,8 +1,8 @@
 package haaa.picturebridge.forge;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraft.network.chat.Style;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.util.text.Style;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 

@@ -11,8 +11,8 @@ import java.net.URI;
 
 final class PictureBridgeClientEvents {
     @SubscribeEvent public void onClick(GuiScreenEvent.MouseClickedEvent.Pre event){
-        if(!(event.getGui() instanceof GuiChat)||event.getButton()!=0)return;Minecraft mc=Minecraft.getMinecraft();
-        ITextComponent component=mc.ingameGUI.getChatGUI().getChatComponent((int)event.getMouseX(),(int)event.getMouseY());
+        if(!(event.getGui() instanceof GuiChat)||event.getButton()!=0)return;Minecraft mc=Minecraft.getInstance();
+        ITextComponent component=mc.ingameGUI.getChatGUI().func_194817_a(event.getMouseX(),event.getMouseY());
         URI uri=component==null?null:ShitBotImageLink.find(component.getStyle());if(uri==null)return;
         mc.displayGuiScreen(new ImageViewerScreen((GuiScreen)event.getGui(),uri));event.setCanceled(true);
     }

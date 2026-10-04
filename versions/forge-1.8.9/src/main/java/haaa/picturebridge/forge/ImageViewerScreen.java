@@ -97,7 +97,7 @@ final class ImageViewerScreen extends GuiScreen {
         texture.update(System.nanoTime());
         DrawnImage drawn = calculateDrawnImage(area);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        int scale = new net.minecraft.client.gui.ScaledResolution(mc).getScaleFactor();
+        int scale = guiScaleFactor();
         GL11.glScissor((area.left + 1) * scale, (height - area.bottom + 1) * scale,
                 Math.max(1, area.width() - 2) * scale, Math.max(1, area.height() - 2) * scale);
         mc.getTextureManager().bindTexture(texture.location());
@@ -112,6 +112,19 @@ final class ImageViewerScreen extends GuiScreen {
                 : tr("picturebridge.status.ready", texture.width(), texture.height(), Math.round(zoom * 100.0));
         fontRendererObj.drawStringWithShadow(dimensions, width - fontRendererObj.getStringWidth(dimensions) - 8, 8,
                 0xB8C7D9);
+    }
+
+    private int guiScaleFactor() {
+        // ScaledResolution changed constructors between 1.8 and 1.8.8.
+        int requestedScale = mc.gameSettings.guiScale;
+        int scale = 1;
+        while ((requestedScale == 0 || scale < requestedScale)
+                && mc.displayWidth / (scale + 1) >= 320
+                && mc.displayHeight / (scale + 1) >= 240) {
+            scale++;
+        }
+        if (mc.isUnicode() && scale > 1 && scale % 2 != 0) scale--;
+        return scale;
     }
 
     private void drawError(ImageArea area) {

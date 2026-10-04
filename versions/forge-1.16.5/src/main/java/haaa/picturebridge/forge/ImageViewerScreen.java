@@ -1,21 +1,19 @@
 package haaa.picturebridge.forge;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import haaa.picturebridge.forge.common.DecodedImage;
 import haaa.picturebridge.forge.common.ImageLoadException;
 import haaa.picturebridge.forge.common.RemoteImageLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import java.net.URI;
-import java.util.List;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
@@ -41,7 +39,7 @@ final class ImageViewerScreen extends Screen {
     private long copiedUntilNanos;
 
     ImageViewerScreen(Screen parent, URI imageUri) {
-        super(new TranslatableComponent("picturebridge.screen.title"));
+        super(new TranslationTextComponent("picturebridge.screen.title"));
         this.parent = parent;
         this.imageUri = imageUri;
     }
@@ -53,11 +51,11 @@ final class ImageViewerScreen extends Screen {
         int startX = (width - buttonWidth * 3 - gap * 2) / 2;
         int buttonY = Math.max(0, height - 27);
         addButton(new Button(startX, buttonY, buttonWidth, 20,
-                new TranslatableComponent("picturebridge.button.back"), button -> onClose()));
+                new TranslationTextComponent("picturebridge.button.back"), button -> onClose()));
         addButton(new Button(startX + buttonWidth + gap, buttonY, buttonWidth, 20,
-                new TranslatableComponent("picturebridge.button.reload"), button -> startLoad(true)));
+                new TranslationTextComponent("picturebridge.button.reload"), button -> startLoad(true)));
         addButton(new Button(startX + (buttonWidth + gap) * 2, buttonY, buttonWidth, 20,
-                new TranslatableComponent("picturebridge.button.copy_url"), button -> copyUrl()));
+                new TranslationTextComponent("picturebridge.button.copy_url"), button -> copyUrl()));
         if (!started) {
             started = true;
             startLoad(false);
@@ -73,7 +71,7 @@ final class ImageViewerScreen extends Screen {
     public boolean isPauseScreen() { return false; }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(MatrixStack poseStack, int mouseX, int mouseY, float partialTicks) {
         fill(poseStack, 0, 0, width, height, 0xC0101115);
         ImageArea area = imageArea();
         fill(poseStack, area.left, area.top, area.right, area.bottom, 0xB0101115);
@@ -91,7 +89,7 @@ final class ImageViewerScreen extends Screen {
         super.render(poseStack, mouseX, mouseY, partialTicks);
     }
 
-    private void drawImage(PoseStack poseStack, ImageArea area) {
+    private void drawImage(MatrixStack poseStack, ImageArea area) {
         texture.update(System.nanoTime());
         DrawnImage drawn = calculateDrawnImage(area);
         int scale = Math.max(1, (int) Math.round(minecraft.getWindow().getGuiScale()));
@@ -110,15 +108,15 @@ final class ImageViewerScreen extends Screen {
         font.drawShadow(poseStack, dimensions, width - font.width(dimensions) - 8, 8, 0xB8C7D9);
     }
 
-    private void drawError(PoseStack poseStack, ImageArea area) {
+    private void drawError(MatrixStack poseStack, ImageArea area) {
         int contentWidth = Math.max(40, Math.min(420, area.width() - 24));
         int y = area.centerY() - 24;
         drawCenteredString(poseStack, font, tr("picturebridge.error.title"), area.centerX(), y, 0xFF6B6B);
-        List<FormattedCharSequence> lines = font.split(new net.minecraft.network.chat.TextComponent(errorText),
-                contentWidth);
-        for (FormattedCharSequence line : lines) {
-            font.drawShadow(poseStack, line, area.centerX() - font.width(line) / 2.0F, y += 11, 0xD5D9E2);
-        }
+        // Let each target infer the text representation used before/after 1.16.2.
+        int[] lineY = {y};
+        font.split(new net.minecraft.util.text.StringTextComponent(errorText), contentWidth).forEach(line -> {
+            font.drawShadow(poseStack, line, area.centerX() - font.width(line) / 2.0F, lineY[0] += 11, 0xD5D9E2);
+        });
     }
 
     @Override
@@ -288,7 +286,7 @@ final class ImageViewerScreen extends Screen {
     }
     private static double clamp(double value, double min, double max) { return Math.max(min, Math.min(max, value)); }
 
-    private static void drawBorder(PoseStack poseStack, ImageArea area, int color) {
+    private static void drawBorder(MatrixStack poseStack, ImageArea area, int color) {
         fill(poseStack, area.left, area.top, area.right, area.top + 1, color);
         fill(poseStack, area.left, area.bottom - 1, area.right, area.bottom, color);
         fill(poseStack, area.left, area.top, area.left + 1, area.bottom, color);

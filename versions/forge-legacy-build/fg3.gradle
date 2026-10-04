@@ -24,8 +24,6 @@ jar.finalizedBy('reobfJar')
 tasks.withType(JavaCompile){options.encoding='UTF-8'}
 if(target.source=='1.13'){
     compileJava.source fileTree(project.file('../forge-legacy-src/1.9/src/main/java')){
-        include 'haaa/picturebridge/forge/AnimatedForgeTexture.java'
-        include 'haaa/picturebridge/forge/ImageViewerScreen.java'
         include 'haaa/picturebridge/forge/ShitBotImageLink.java'
     }
 }

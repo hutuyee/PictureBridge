@@ -1,7 +1,7 @@
 package haaa.picturebridge.forge;
 
-import net.minecraft.event.ClickEvent;
-import net.minecraft.event.HoverEvent;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 
