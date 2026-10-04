@@ -1,6 +1,5 @@
 package haaa.picturebridge.fabric.legacy;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import haaa.picturebridge.forge.common.DecodedImage;
 import haaa.picturebridge.forge.common.ImageLoadException;
 import haaa.picturebridge.forge.common.RemoteImageLoader;
