@@ -26,6 +26,9 @@ subprojects { adapter ->
     version = rootProperties.mod_version
     base { archivesName = "picturebridge-${adapter.name}" }
     java.toolchain.languageVersion = JavaLanguageVersion.of(target.java as int)
+    tasks.withType(net.neoforged.gradle.common.runtime.tasks.JavaSourceTransformer).configureEach {
+        javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+    }
 
     sourceSets.main.java.setSrcDirs([
             rootProject.file("../neoforge-src/${target.source}/java"),

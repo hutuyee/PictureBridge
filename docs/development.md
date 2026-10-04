@@ -14,7 +14,8 @@
 | NeoForge 1.20.4、1.20.6–26.2 | `versions/neoforge/` | JDK 25 | JDK 17、21、25 |
 | NeoForge 1.20.2、1.20.3、1.20.5 | `versions/neoforge-legacy/` | JDK 21 | JDK 17、21 |
 | NeoForge 1.20.1 | `versions/neoforge-1.20.1/` | JDK 17 | JDK 17 |
-| Forge 1.17.1–1.21.11 | `versions/forge-modern/` | JDK 21 | JDK 16、17、21 |
+| Forge 1.17.1–1.21.10 | `versions/forge-modern/` | JDK 21 | JDK 16、17、21 |
+| Forge 1.21.11 | `versions/forge-1.21.11/`（根目录 wrapper） | JDK 21 | JDK 21 |
 | Forge 1.8–1.15.2 | `versions/` 下各精确版本目录 | JDK 8 | JDK 8 |
 | Forge 1.16.1–1.16.5 | `versions/` 下各精确版本目录 | JDK 17 | JDK 8、17 |
 
@@ -101,7 +102,7 @@ NeoForge 产物位于 `versions/` 下对应版本目录的 `build/libs/`。
 
 ## Forge
 
-### Minecraft 1.17.1–1.21.11
+### Minecraft 1.17.1–1.21.10
 
 这些目标由 `versions/forge-modern/` 聚合工程管理。
 
@@ -123,6 +124,14 @@ NeoForge 产物位于 `versions/` 下对应版本目录的 `build/libs/`。
 .\versions\forge-modern\gradlew.bat :forge-1.20.6:runClient
 ```
 
+### Minecraft 1.21.11
+
+该目标使用官方 MDK 对应的 ForgeGradle 7，通过根目录的 Gradle 9 wrapper 构建：
+
+```powershell
+.\gradlew.bat -p .\versions\forge-1.21.11 build
+```
+
 ### Minecraft 1.8–1.16.5
 
 旧版 Forge 按精确 Minecraft 目标构建。`-p` 后的目录可以替换为同一行中的其他目标目录。
@@ -130,8 +139,8 @@ NeoForge 产物位于 `versions/` 下对应版本目录的 `build/libs/`。
 | Minecraft 目标 | Gradle / JDK | 示例命令 |
 | --- | --- | --- |
 | 1.8、1.8.8、1.8.9 | Gradle 2.7 / JDK 8 | `.\versions\forge-1.8.9\gradlew.bat -p .\versions\forge-1.8 build` |
-| 1.9、1.9.4、1.10、1.10.2 | Gradle 2.14.1 / JDK 8 | `gradle -p .\versions\forge-1.10.2 build` |
-| 1.11、1.11.2、1.12、1.12.1、1.12.2 | Gradle 4.9 / JDK 8 | `.\versions\forge-1.12.2\gradlew.bat -p .\versions\forge-1.12.1 build` |
+| 1.9、1.9.4、1.10、1.10.2、1.11、1.11.2 | Gradle 2.14.1 / JDK 8 | `gradle -p .\versions\forge-1.10.2 build` |
+| 1.12、1.12.1、1.12.2 | Gradle 4.9 / JDK 8 | `.\versions\forge-1.12.2\gradlew.bat -p .\versions\forge-1.12.1 build` |
 | 1.13.2、1.14.2–1.14.4、1.15–1.15.2 | Gradle 4.9 / JDK 8 | `.\versions\forge-1.12.2\gradlew.bat -p .\versions\forge-1.15.2 build` |
 | 1.16.1–1.16.5 | Gradle 8.4 / JDK 17，并提供 JDK 8 toolchain | `.\versions\forge-1.16.5\gradlew.bat -p .\versions\forge-1.16.4 build` |
 

@@ -13,8 +13,8 @@ def targets = [
         'forge-1.19.2' : [minecraft:'1.19.2', forge:'43.5.0', source:'1.19', java:17],
         'forge-1.19.3' : [minecraft:'1.19.3', forge:'44.1.0', source:'1.19.4', java:17],
         'forge-1.19.4' : [minecraft:'1.19.4', forge:'45.4.0', source:'1.19.4', java:17],
-        'forge-1.20'   : [minecraft:'1.20', forge:'46.0.14', source:'1.20.4', java:17],
-        'forge-1.20.1' : [minecraft:'1.20.1', forge:'47.4.10', source:'1.20.4', java:17],
+        'forge-1.20'   : [minecraft:'1.20', forge:'46.0.14', source:'1.20.1', java:17],
+        'forge-1.20.1' : [minecraft:'1.20.1', forge:'47.4.10', source:'1.20.1', java:17],
         'forge-1.20.2' : [minecraft:'1.20.2', forge:'48.1.0', source:'1.20.4', java:17],
         'forge-1.20.3' : [minecraft:'1.20.3', forge:'49.0.2', source:'1.20.4', java:17],
         'forge-1.20.4' : [minecraft:'1.20.4', forge:'49.2.0', source:'1.20.4', java:17],
@@ -23,13 +23,12 @@ def targets = [
         'forge-1.21.1' : [minecraft:'1.21.1', forge:'52.1.0', source:'1.20.6', java:21],
         'forge-1.21.3' : [minecraft:'1.21.3', forge:'53.1.0', source:'1.21.4', java:21],
         'forge-1.21.4' : [minecraft:'1.21.4', forge:'54.1.14', source:'1.21.4', java:21],
-        'forge-1.21.5' : [minecraft:'1.21.5', forge:'55.1.0', source:'1.21.8', java:21],
+        'forge-1.21.5' : [minecraft:'1.21.5', forge:'55.1.0', source:'1.21.5', java:21],
         'forge-1.21.6' : [minecraft:'1.21.6', forge:'56.0.9', source:'1.21.8', java:21],
         'forge-1.21.7' : [minecraft:'1.21.7', forge:'57.0.3', source:'1.21.8', java:21],
         'forge-1.21.8' : [minecraft:'1.21.8', forge:'58.1.0', source:'1.21.8', java:21],
         'forge-1.21.9' : [minecraft:'1.21.9', forge:'59.0.5', source:'1.21.11', java:21],
-        'forge-1.21.10': [minecraft:'1.21.10', forge:'60.1.0', source:'1.21.11', java:21],
-        'forge-1.21.11': [minecraft:'1.21.11', forge:'61.2.0', source:'1.21.11', java:21]
+        'forge-1.21.10': [minecraft:'1.21.10', forge:'60.1.0', source:'1.21.11', java:21]
 ]
 
 subprojects { adapter ->
@@ -53,10 +52,10 @@ subprojects { adapter ->
         sources.add(rootProject.file("../forge-modern-src/${target.source}/java"))
     } else {
         sources.add(rootProject.file("../neoforge-src/${target.source}/java"))
-        if (target.source in ['1.20.4', '1.20.6', '1.21.4']) {
+        if (target.source in ['1.20.1', '1.20.4', '1.20.6', '1.21.4']) {
             sources.add(rootProject.file('../neoforge-src/shared-old-chat/java'))
             sources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
-        } else if (target.source in ['1.21.8', '1.21.11']) {
+        } else if (target.source in ['1.21.5', '1.21.8', '1.21.11']) {
             sources.add(rootProject.file('../neoforge-src/shared-screen-old-input/java'))
             sources.add(rootProject.file('../neoforge-src/shared-adt-chat/java'))
         }

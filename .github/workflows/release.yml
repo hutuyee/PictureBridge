@@ -42,22 +42,26 @@ jobs:
             java: "17"
             gradle: wrapper
           - id: forge-modern
-            name: Forge 1.17.1-1.21.11
+            name: Forge 1.17.1-1.21.10
             java: |-
               16
               17
               21
+            gradle: wrapper
+          - id: forge-1-21-11
+            name: Forge 1.21.11
+            java: "21"
             gradle: wrapper
           - id: forge-1-8
             name: Forge 1.8-1.8.9
             java: "8"
             gradle: wrapper
           - id: forge-1-9
-            name: Forge 1.9-1.10.2
+            name: Forge 1.9-1.11.2
             java: "8"
             gradle: "2.14.1"
           - id: forge-1-11
-            name: Forge 1.11-1.15.2
+            name: Forge 1.12-1.15.2
             java: "8"
             gradle: wrapper
           - id: forge-1-16
@@ -83,6 +87,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: ${{ matrix.gradle }}
+          # ForgeGradle 6 can leave incomplete generated artifacts after a failed build.
+          cache-disabled: ${{ matrix.id == 'forge-modern' }}
 
       - name: Build
         shell: bash
@@ -112,6 +118,9 @@ jobs:
                 -Dorg.gradle.java.installations.fromEnv=JAVA_HOME_16_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64 \
                 -p versions/forge-modern --continue build
               ;;
+            forge-1-21-11)
+              bash ./gradlew --no-daemon -p versions/forge-1.21.11 build
+              ;;
             forge-1-8)
               build_failed=0
               for target in versions/forge-1.8 versions/forge-1.8.8 versions/forge-1.8.9; do
@@ -121,7 +130,9 @@ jobs:
               ;;
             forge-1-9)
               build_failed=0
-              for target in versions/forge-1.9 versions/forge-1.9.4 versions/forge-1.10 versions/forge-1.10.2; do
+              for target in \
+                versions/forge-1.9 versions/forge-1.9.4 versions/forge-1.10 versions/forge-1.10.2 \
+                versions/forge-1.11 versions/forge-1.11.2; do
                 gradle --no-daemon -p "$target" build || build_failed=1
               done
               exit "$build_failed"
@@ -129,7 +140,6 @@ jobs:
             forge-1-11)
               build_failed=0
               for target in \
-                versions/forge-1.11 versions/forge-1.11.2 \
                 versions/forge-1.12 versions/forge-1.12.1 versions/forge-1.12.2 \
                 versions/forge-1.13.2 \
                 versions/forge-1.14.2 versions/forge-1.14.3 versions/forge-1.14.4 \

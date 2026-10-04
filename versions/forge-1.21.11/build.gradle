@@ -1,1 +1,66 @@
-// Configured by ../forge-modern/build.gradle.
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '[7.0.3,8)'
+}
+
+def rootProperties = new Properties()
+file('../../gradle.properties').withInputStream { rootProperties.load(it) }
+version = rootProperties.mod_version
+group = 'haaa.picturebridge'
+base { archivesName = 'picturebridge-forge-1.21.11' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+sourceSets.main.java.setSrcDirs([
+        file('../forge-modern-src/entry/java'),
+        file('../forge-common/src/main/java'),
+        file('../neoforge-src/1.21.11/java'),
+        file('../neoforge-src/1.21.11-texture/java'),
+        file('../neoforge-src/shared-screen-old-input/java'),
+        file('../neoforge-src/shared-adt-chat/java')
+])
+def oldTexture = file('../neoforge-src/shared-adt-chat/java/haaa/picturebridge/neoforge/AnimatedNeoTexture.java').canonicalFile
+sourceSets.main.java.exclude { it.file.canonicalFile == oldTexture }
+sourceSets.main.resources.setSrcDirs([
+        file('../neoforge-common/src/main/resources'),
+        file('../forge-modern-metadata/src/main/resources')
+])
+
+minecraft {
+    mappings channel: 'official', version: '1.21.11'
+    runs {
+        configureEach { workingDir = layout.projectDirectory.dir('run') }
+        register('client')
+    }
+}
+
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    mavenCentral()
+}
+
+dependencies {
+    implementation minecraft.dependency('net.minecraftforge:forge:1.21.11-61.2.0')
+}
+
+def props = [
+        mod_version: project.version,
+        minecraft_version: '1.21.11',
+        forge_version: '61.2.0',
+        forge_major: '61',
+        java_compatibility: 'JAVA_21',
+        mixin_package: 'haaa.picturebridge.neoforge.mixin',
+        mixin_class: 'ChatScreenMixin'
+]
+tasks.named('processResources', ProcessResources).configure {
+    inputs.properties props
+    filesMatching(['META-INF/mods.toml', 'picturebridge.forge.mixins.json']) { expand props }
+}
+tasks.named('jar', Jar).configure {
+    from(file('../../LICENSE')) { rename { 'LICENSE_picturebridge' } }
+}
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+    options.encoding = 'UTF-8'
+}
